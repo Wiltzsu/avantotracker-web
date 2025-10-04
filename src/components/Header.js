@@ -18,10 +18,9 @@ const Header = () => {
         <h1>AvantoTracker</h1>
       </div>
       <div className="user-menu">
-        <span className="welcome-text">Welcome, {user?.name}!</span>
+        <span className="welcome-text">Tervetuloa, {user?.name}!</span>
         <button onClick={handleLogout} className="logout-button">
-          <span>🚪</span>
-          Logout
+          Kirjaudu ulos
         </button>
       </div>
     </div>

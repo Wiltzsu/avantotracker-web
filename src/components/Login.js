@@ -37,11 +37,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-background">
-        <div className="ice-pattern"></div>
-      </div>
-      
+    <div className="login-container">      
       <div className="login-layout">
         {/* Left side - Login form */}
         <div className="login-section">
@@ -51,8 +47,8 @@ const Login = () => {
                 <span className="logo-icon">🧊</span>
                 <h1>AvantoTracker</h1>
               </div>
-              <h2>Welcome Back</h2>
-              <p>Sign in to your account</p>
+              <h2>Tervetuloa</h2>
+              <p>Kirjaudu sisään</p>
             </div>
 
             <form onSubmit={handleSubmit} className="login-form">
@@ -64,7 +60,7 @@ const Login = () => {
               )}
 
               <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">Sähköposti</label>
                 <div className="input-wrapper">
                   <span className="input-icon">📧</span>
                   <input
@@ -73,7 +69,7 @@ const Login = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="Enter your email"
+                    placeholder="Syötä sähköposti"
                     required
                     disabled={loading}
                   />
@@ -81,7 +77,7 @@ const Login = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Salasana</label>
                 <div className="input-wrapper">
                   <span className="input-icon">🔒</span>
                   <input
@@ -90,7 +86,7 @@ const Login = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"
+                    placeholder="Syötä salasana"
                     required
                     disabled={loading}
                   />
@@ -113,21 +109,21 @@ const Login = () => {
                 {loading ? (
                   <>
                     <span className="spinner"></span>
-                    Signing in...
+                    Kirjaudutaan...
                   </>
                 ) : (
                   <>
                     <span className="button-icon">🏊‍♂️</span>
-                    Sign In
+                    Kirjaudu sisään
                   </>
                 )}
               </button>
 
               <div className="login-footer">
                 <p>
-                  Don't have an account?{' '}
+                  Ei käyttäjää?{' '}
                   <Link to="/register" className="register-link">
-                    Sign up here
+                    Rekisteröidy
                   </Link>
                 </p>
               </div>
@@ -138,37 +134,37 @@ const Login = () => {
         {/* Right side - Feature cards */}
         <div className="features-section">
           <div className="features-header">
-            <h2>Track Your Ice Swimming Journey</h2>
-            <p>Monitor your progress and improve your cold water adaptation</p>
+          <h2>Pidä kirjaa avantouinneistasi</h2>
+          <p>Seuraa edistymistäsi ja paranna kylmään veteen sopeutumistasi</p>
           </div>
 
           <div className="feature-highlights">
             <div className="feature-item">
               <div className="feature-icon">📊</div>
               <div className="feature-content">
-                <h3>Track Sessions</h3>
-                <p>Log your ice swimming sessions with detailed metrics</p>
+                <h3>Harjoitusten seuranta</h3>
+                <p>Kirjaa avantouintikertasi yksityiskohtaisilla tiedoilla</p>
               </div>
             </div>
             <div className="feature-item">
               <div className="feature-icon">🌡️</div>
               <div className="feature-content">
-                <h3>Temperature Logs</h3>
-                <p>Monitor water temperature and track your cold adaptation</p>
+                <h3>Lämpötilalokit</h3>
+                <p>Seuraa veden lämpötilaa ja omaa kylmään sopeutumistasi</p>
               </div>
             </div>
             <div className="feature-item">
               <div className="feature-icon">⏱️</div>
               <div className="feature-content">
-                <h3>Duration Tracking</h3>
-                <p>Keep track of how long you stay in the cold water</p>
+                <h3>Keston seuranta</h3>
+                <p>Pidä kirjaa siitä, kuinka kauan viivyt kylmässä vedessä</p>
               </div>
             </div>
             <div className="feature-item">
               <div className="feature-icon">🧘‍♂️</div>
               <div className="feature-content">
-                <h3>Mood Tracking</h3>
-                <p>Monitor how ice swimming affects your mood and wellbeing</p>
+                <h3>Mielialan seuranta</h3>
+                <p>Seuraa, miten avantouinti vaikuttaa mielialaasi ja hyvinvointiisi</p>
               </div>
             </div>
           </div>

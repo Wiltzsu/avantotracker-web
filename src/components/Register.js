@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import './Login.css'; // Reusing the same styles
+import './Register.css'; // Reusing the same styles
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -57,21 +57,18 @@ const Register = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-background">
-        <div className="ice-pattern"></div>
-      </div>
-      
-      <div className="login-card">
-        <div className="login-header">
+    <div className="register-container">
+      <div className="register-layout">
+      <div className="register-card">
+        <div className="register-header">
           <div className="logo">
             <span className="logo-icon">🧊</span>
             <h1>AvantoTracker</h1>
           </div>
-          <p className="login-subtitle">Join the ice swimming community</p>
+          <p className="register-subtitle">Liity avantouimareiden yhteisöön</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="register-form">
           {error && (
             <div className="error-message">
               <span className="error-icon">⚠️</span>
@@ -87,7 +84,7 @@ const Register = () => {
           )}
 
           <div className="form-group">
-            <label htmlFor="name">Full Name</label>
+            <label htmlFor="name">Nimi</label>
             <div className="input-wrapper">
               <span className="input-icon">👤</span>
               <input
@@ -96,7 +93,7 @@ const Register = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Enter your full name"
+                placeholder="Syötä koko nimi"
                 required
                 disabled={loading}
               />
@@ -104,7 +101,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Sähköposti</label>
             <div className="input-wrapper">
               <span className="input-icon">📧</span>
               <input
@@ -113,7 +110,7 @@ const Register = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email"
+                placeholder="Syötä sähköposti"
                 required
                 disabled={loading}
               />
@@ -121,7 +118,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Salasana</label>
             <div className="input-wrapper">
               <span className="input-icon">🔒</span>
               <input
@@ -130,7 +127,7 @@ const Register = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Enter your password"
+                placeholder="Syötä salasana"
                 required
                 disabled={loading}
                 minLength={6}
@@ -147,7 +144,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
+            <label htmlFor="confirmPassword">Salasana uusiksi</label>
             <div className="input-wrapper">
               <span className="input-icon">🔒</span>
               <input
@@ -156,7 +153,7 @@ const Register = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="Confirm your password"
+                placeholder="Syötä salasana uusiksi"
                 required
                 disabled={loading}
                 minLength={6}
@@ -174,31 +171,32 @@ const Register = () => {
 
           <button 
             type="submit" 
-            className="login-button"
+            className="register-button"
             disabled={loading}
           >
             {loading ? (
               <>
                 <span className="spinner"></span>
-                Creating account...
+                Luodaan käyttäjää...
               </>
             ) : (
               <>
                 <span className="button-icon">🚀</span>
-                Create Account
+                Luo käyttäjä
               </>
             )}
           </button>
 
-          <div className="login-footer">
+          <div className="register-footer">
             <p>
-              Already have an account?{' '}
+              Käyttäjä olemassa?{' '}
               <Link to="/login" className="register-link">
-                Sign in here
+                Kirjaudu
               </Link>
             </p>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

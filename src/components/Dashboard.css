@@ -1,12 +1,22 @@
 .dashboard-container {
+  display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+  color: #e5e7eb;
+  justify-content: center;
+}
+
+.container div {
+  background-color: #f1f1f1;
+  margin: 10px;
+  padding: 20px;
+  font-size: 24px;
 }
 
 .dashboard-header {
-  background: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #e1e5e9;
+  background: #111827;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid #1f2937;
 }
 
 .header-content {
@@ -46,7 +56,7 @@
 }
 
 .welcome-text {
-  color: #333;
+  color: #e5e7eb;
   font-weight: 500;
 }
 
@@ -57,40 +67,41 @@
 }
 
 .dashboard-content {
-  display: flex;
   flex-direction: column;
-  gap: 2rem;
+  padding: 2rem;
+}
+
+.dashboard-stats {
+  flex-direction: column;
+  padding: 2rem;
 }
 
 .welcome-card {
-  background: white;
+  background: #1f2937;
   padding: 2rem;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
 }
 
 .welcome-card h2 {
-  color: #333;
+  color: #f3f4f6;
   margin: 0 0 1rem 0;
   font-size: 1.8rem;
 }
 
 .welcome-card p {
-  color: #666;
+  color: #d1d5db;
   font-size: 1.1rem;
   margin: 0;
 }
 
 .quick-actions {
-  background: white;
-  padding: 2rem;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.quick-actions h3 {
-  color: #333;
+.quick-actions h2 {
+  color: #f3f4f6;
   margin: 0 0 1.5rem 0;
   font-size: 1.3rem;
 }
@@ -101,8 +112,13 @@
   flex-wrap: wrap;
 }
 
+.action-link {
+  color: white;
+  text-decoration: none;
+}
+
 .action-button {
-  padding: 12px 20px;
+  padding: 1.5rem 3rem;
   border: none;
   border-radius: 10px;
   font-weight: 600;
@@ -111,7 +127,18 @@
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
-  font-size: 0.95rem;
+  font-size: 1.5rem;
+}
+
+.action-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space between icon and text */
+}
+
+.plus-icon {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .action-button.primary {
@@ -120,9 +147,9 @@
 }
 
 .action-button.secondary {
-  background: #f8f9fa;
-  color: #333;
-  border: 2px solid #e1e5e9;
+  background: #374151;
+  color: #e5e7eb;
+  border: 2px solid #4b5563;
 }
 
 .action-button:hover {
@@ -134,8 +161,8 @@
 }
 
 .action-button.secondary:hover {
-  background: #e9ecef;
-  border-color: #ced4da;
+  background: #4b5563;
+  border-color: #6b7280;
 }
 
 /* Responsive design */

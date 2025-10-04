@@ -1,4 +1,4 @@
-.login-container {
+.register-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -8,7 +8,7 @@
   padding: 20px;
 }
 
-.login-background {
+.register-background {
   position: absolute;
   top: 0;
   left: 0;
@@ -18,11 +18,9 @@
 }
 
 /* Main layout container */
-.login-layout {
-  display: flex;
-  width: 100%;
-  max-width: 1200px;
-  background: rgba(25, 25, 25, 0.95);
+.register-layout {
+  width: 600px;
+  background: white;
   backdrop-filter: blur(10px);
   border-radius: 20px;
   box-shadow:
@@ -35,9 +33,7 @@
   overflow: hidden;
 }
 
-/* Left side - Login section */
-.login-section {
-  flex: 1;
+.register-section {
   padding: 40px;
   display: flex;
   align-items: center;
@@ -45,12 +41,12 @@
   background: white;
 }
 
-.login-card {
-  width: 100%;
-  max-width: 400px;
+.register-card {
+  max-width: 600px;
+  padding: 3rem;
 }
 
-.login-header {
+.register-header {
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -83,20 +79,20 @@
   margin: 0;
 }
 
-.login-header h2 {
+.register-header h2 {
   font-size: 2.4rem;
   font-weight: 700;
   color: #333;
   margin: 0 0 0.5rem 0;
 }
 
-.login-header p {
+.register-header p {
   color: #666;
   font-size: 1.1rem;
   margin: 0;
 }
 
-.login-form {
+.register-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -186,7 +182,7 @@
   opacity: 0.5;
 }
 
-.login-button {
+.register-button {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
@@ -203,16 +199,16 @@
   margin-top: 10px;
 }
 
-.login-button:hover:not(:disabled) {
+.register-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
-.login-button:active:not(:disabled) {
+.register-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.login-button:disabled {
+.register-button:disabled {
   cursor: not-allowed;
   opacity: 0.7;
   transform: none;
@@ -236,14 +232,14 @@
   100% { transform: rotate(360deg); }
 }
 
-.login-footer {
+.register-footer {
   text-align: center;
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #eee;
 }
 
-.login-footer p {
+.register-footer p {
   color: #666;
   font-size: 1.1rem;
   margin: 0;
@@ -261,85 +257,14 @@
   text-decoration: underline;
 }
 
-/* Right side - Features section */
-.features-section {
-  flex: 1;
-  padding: 40px;
-  background: linear-gradient(135deg, #030f44 0%, #260448 100%);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.features-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.features-header h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: white;
-  margin: 0 0 0.5rem 0;
-}
-
-.features-header p {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1rem;
-  margin: 0;
-}
-
-/* Feature highlights */
-.feature-highlights {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.feature-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.feature-item:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.feature-icon {
-  font-size: 2rem;
-  flex-shrink: 0;
-}
-
-.feature-content h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: white;
-}
-
-.feature-content p {
-  margin: 0;
-  font-size: 1.1rem;
-  color: rgb(245, 245, 245);
-  line-height: 1.4;
-}
-
 /* Responsive design */
 @media (max-width: 968px) {
-  .login-layout {
+  .register-layout {
     flex-direction: column;
     max-width: 600px;
   }
 
-  .login-section {
+  .register-section {
     padding: 30px;
   }
 
@@ -360,15 +285,15 @@
 }
 
 @media (max-width: 768px) {
-  .login-container {
+  .register-container {
     padding: 10px;
   }
 
-  .login-layout {
+  .register-layout {
     max-width: 100%;
   }
 
-  .login-section {
+  .register-section {
     padding: 20px;
   }
 
@@ -394,7 +319,7 @@
 }
 
 @media (max-width: 480px) {
-  .login-section {
+  .register-section {
     padding: 15px;
   }
 
