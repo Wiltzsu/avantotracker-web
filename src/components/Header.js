@@ -15,7 +15,9 @@ const Header = () => {
     <div className="header-content">
       <div className="logo">
         <span className="logo-icon">🧊</span>
+        <a href="/dashboard">
         <h1>AvantoTracker</h1>
+        </a>
       </div>
       <div className="user-menu">
         <span className="welcome-text">Tervetuloa, {user?.name}!</span>

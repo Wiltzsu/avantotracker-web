@@ -7,7 +7,6 @@ import Footer from './Footer.js';
 import './NewAvantoForm.css';
 
 const NewAvantoForm = () => {
-  // State to store form input values
   const [formData, setFormData] = useState({
     date: '',
     location: '',
@@ -22,19 +21,20 @@ const NewAvantoForm = () => {
     sauna_duration: '',
   });
 
-  // Handle input field changes (when user types)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (e) => {
     setFormData({
-      ...formData,                    // Keep existing form data
-      [e.target.name]: e.target.value // Update the specific field that changed
+      ...formData,
+      [e.target.name]: e.target.value
     })
   }
 
   const navigate = useNavigate();
 
-  // Handle form submission (when user clicks add)
   const handleSubmit = async (e) => {
-    e.preventDefault();                   // Prevent page refresh
+    e.preventDefault();
+    setIsSubmitting(true);
     
     try {
       const payload = {
@@ -47,7 +47,7 @@ const NewAvantoForm = () => {
         feeling_before: formData.feeling_before !== '' ? parseInt(formData.feeling_before, 10) : null,
         feeling_after: formData.feeling_after !== '' ? parseInt(formData.feeling_after, 10) : null,
         selfie_path: formData.selfie_path || null,
-        sauna: formData.sauna === '' ? null : formData.sauna === '1', // boolean or change to Number(...) if you prefer 1/0
+        sauna: formData.sauna === '' ? null : formData.sauna === '1',
         sauna_duration: formData.sauna_duration !== '' ? parseInt(formData.sauna_duration, 10) : null,
       };
 
@@ -55,168 +55,220 @@ const NewAvantoForm = () => {
       navigate('/dashboard');
     } catch (err) {
       console.error('Create avanto failed:', err?.response?.data || err);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return(
     <div className="avanto-container">  
-      <Header></Header>
-
-      <form onSubmit={handleSubmit} className="avanto-form">
-
-        <div className="form-group">
-          <label htmlFor="date">Päivämäärä</label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
+      <Header />
+      
+      <div className="form-wrapper">
+        <div className="form-header">
+          <h1>Uusi avanto</h1>
+          <p>Täytä tiedot uudesta avannosta</p>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="location">Sijainti</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder=""
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="avanto-form">
+          <div className="form-section">
+            <h3>Perustiedot</h3>
+            
+            <div className="form-group">
+              <label htmlFor="date">📅 Päivämäärä</label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-        <div className="form-group">
-          <label htmlFor="water_temperature">Veden lämpötila (°C)</label>
-          <input
-            type="number"
-            id="water_temperature"
-            name="water_temperature"
-            value={formData.water_temperature}
-            onChange={handleChange}
-            step="0.1"
-            min="-50"
-            max="50"
-            placeholder="0"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Kesto</label>
-          <div className="input-row">
-            <input
-              type="number"
-              name="duration_minutes"
-              value={formData.duration_minutes}
-              onChange={handleChange}
-              min="0"
-              placeholder="Minuuttia"
-            />
-            <input
-              type="number"
-              name="duration_seconds"
-              value={formData.duration_seconds}
-              onChange={handleChange}
-              min="0"
-              max="59"
-              placeholder="Sekuntia"
-            />
+            <div className="form-group">
+              <label htmlFor="location">📍 Sijainti</label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="esim. Seurasaari, Helsinki"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="swear_words">Kirosanat</label>
-          <input
-            type="number"
-            id="swear_words"
-            name="swear_words"
-            value={formData.swear_words}
-            onChange={handleChange}
-            min="0"
-            step="1"
-            placeholder="0"
-          />
-        </div>
+          <div className="form-section">
+            <h3>Veden tiedot</h3>
+            
+            <div className="form-group">
+              <label htmlFor="water_temperature">🌡️ Veden lämpötila (°C)</label>
+              <input
+                type="number"
+                id="water_temperature"
+                name="water_temperature"
+                value={formData.water_temperature}
+                onChange={handleChange}
+                step="0.1"
+                min="-50"
+                max="50"
+                placeholder="0.0"
+              />
+            </div>
 
-        <div className="form-group">
-          <label htmlFor="feeling_before">Fiilis ennen (1–10)</label>
-          <input
-            type="number"
-            id="feeling_before"
-            name="feeling_before"
-            value={formData.feeling_before}
-            onChange={handleChange}
-            min="1"
-            max="10"
-            step="1"
-            placeholder="1"
-          />
-        </div>
+            <div className="form-group">
+              <label>⏱️ Kesto</label>
+              <div className="input-row">
+                <div className="input-with-label">
+                  <input
+                    type="number"
+                    name="duration_minutes"
+                    value={formData.duration_minutes}
+                    onChange={handleChange}
+                    min="0"
+                    placeholder="0"
+                  />
+                  <span className="input-suffix">min</span>
+                </div>
+                <div className="input-with-label">
+                  <input
+                    type="number"
+                    name="duration_seconds"
+                    value={formData.duration_seconds}
+                    onChange={handleChange}
+                    min="0"
+                    max="59"
+                    placeholder="0"
+                  />
+                  <span className="input-suffix">sek</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="feeling_after">Fiilis jälkeen (1–10)</label>
-          <input
-            type="number"
-            id="feeling_after"
-            name="feeling_after"
-            value={formData.feeling_after}
-            onChange={handleChange}
-            min="1"
-            max="10"
-            step="1"
-            placeholder="10"
-          />
-        </div>
+          <div className="form-section">
+            <h3>Kokemus</h3>
+            
+            <div className="form-group">
+              <label htmlFor="feeling_before">😰 Fiilis ennen (1–10)</label>
+              <div className="rating-input">
+                <input
+                  type="range"
+                  id="feeling_before"
+                  name="feeling_before"
+                  value={formData.feeling_before}
+                  onChange={handleChange}
+                  min="1"
+                  max="10"
+                  step="1"
+                />
+                <span className="rating-value">{formData.feeling_before || '1'}</span>
+              </div>
+            </div>
 
-        <div className="form-group">
-          <label htmlFor="selfie_path">Selfie</label>
-          <input
-            type="text"
-            id="selfie_path"
-            name="selfie_path"
-            value={formData.selfie_path}
-            onChange={handleChange}
-            placeholder="/uploads/selfie.jpg"
-          />
-        </div>
+            <div className="form-group">
+              <label htmlFor="feeling_after">😌 Fiilis jälkeen (1–10)</label>
+              <div className="rating-input">
+                <input
+                  type="range"
+                  id="feeling_after"
+                  name="feeling_after"
+                  value={formData.feeling_after}
+                  onChange={handleChange}
+                  min="1"
+                  max="10"
+                  step="1"
+                />
+                <span className="rating-value">{formData.feeling_after || '10'}</span>
+              </div>
+            </div>
 
-        <div className="form-group">
-          <label htmlFor="sauna">Sauna</label>
-          <select
-            id="sauna"
-            name="sauna"
-            value={formData.sauna}
-            onChange={handleChange}
-          >
-            <option value="">Valitse</option>
-            <option value="1">Kyllä</option>
-            <option value="0">Ei</option>
-          </select>
-        </div>
+            <div className="form-group">
+              <label htmlFor="swear_words">💬 Kirosanat</label>
+              <input
+                type="number"
+                id="swear_words"
+                name="swear_words"
+                value={formData.swear_words}
+                onChange={handleChange}
+                min="0"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="sauna_duration">Saunan kesto (minuutteja)</label>
-          <input
-            type="number"
-            id="sauna_duration"
-            name="sauna_duration"
-            value={formData.sauna_duration}
-            onChange={handleChange}
-            min="0"
-            step="1"
-            placeholder="5"
-          />
-        </div>
+          <div className="form-section">
+            <h3>Sauna</h3>
+            
+            <div className="form-group">
+              <label htmlFor="sauna">🔥 Sauna</label>
+              <select
+                id="sauna"
+                name="sauna"
+                value={formData.sauna}
+                onChange={handleChange}
+              >
+                <option value="">Valitse</option>
+                <option value="1">Kyllä</option>
+                <option value="0">Ei</option>
+              </select>
+            </div>
 
-        <button type="submit" className="action-button primary">
-          Lisää avanto
-        </button>
-      </form>
+            {formData.sauna === '1' && (
+              <div className="form-group">
+                <label htmlFor="sauna_duration">⏰ Saunan kesto (minuutteja)</label>
+                <input
+                  type="number"
+                  id="sauna_duration"
+                  name="sauna_duration"
+                  value={formData.sauna_duration}
+                  onChange={handleChange}
+                  min="0"
+                  step="1"
+                  placeholder="5"
+                />
+              </div>
+            )}
+          </div>
 
-      <Footer></Footer>
+          <div className="form-section">
+            <h3>Muuta</h3>
+            
+            <div className="form-group">
+              <label htmlFor="selfie_path">📸 Selfie</label>
+              <input
+                type="text"
+                id="selfie_path"
+                name="selfie_path"
+                value={formData.selfie_path}
+                onChange={handleChange}
+                placeholder="/uploads/selfie.jpg"
+              />
+            </div>
+          </div>
 
+          <div className="form-actions">
+            <button 
+              type="button" 
+              className="btn-secondary"
+              onClick={() => navigate('/dashboard')}
+            >
+              Peruuta
+            </button>
+            <button 
+              type="submit" 
+              className="btn-primary"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Lisätään...' : 'Lisää avanto'}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <Footer />
     </div>
   );
 };
