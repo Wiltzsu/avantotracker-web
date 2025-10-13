@@ -33,7 +33,7 @@ const Dashboard = () => {
         <section className="dashboard-hero">
           <div className="hero-content">
             <h1>Tervetuloa takaisin! 👋</h1>
-            <p>Hallinnoi avantoja, tarkastele trendejä ja aloita nopeasti alla olevista toiminnoista.</p>
+            <p>Hallinnoi avantokäyntejä, tarkastele trendejä ja tilastoja alla olevista toiminnoista.</p>
           </div>
         </section>
 
@@ -43,7 +43,7 @@ const Dashboard = () => {
             <h2>Pikatoiminnot</h2>
             <div className="action-cards">
               <Link to="/new" className="action-card primary">
-                <div className="action-icon">➕</div>
+                <div className="action-icon">+</div>
                 <div className="action-content">
                   <h3>Uusi avanto</h3>
                   <p>Luo uusi merkintä</p>

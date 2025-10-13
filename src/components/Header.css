@@ -54,3 +54,11 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(236, 236, 236, 0.3);
 }
+
+.welcome-text {
+  color: white;
+  font-weight: var(--font-weight-medium);
+  text-align: right;
+  flex: 1;
+  margin-right: 1rem;
+}

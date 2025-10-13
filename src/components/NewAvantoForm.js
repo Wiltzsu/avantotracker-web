@@ -67,7 +67,7 @@ const NewAvantoForm = () => {
       <div className="form-wrapper">
         <div className="form-header">
           <h1>Uusi avanto</h1>
-          <p>Täytä tiedot uudesta avannosta</p>
+          <p>Täytä tiedot uudesta avantokäynnistä</p>
         </div>
 
         <form onSubmit={handleSubmit} className="avanto-form">
@@ -100,7 +100,7 @@ const NewAvantoForm = () => {
           </div>
 
           <div className="form-section">
-            <h3>Veden tiedot</h3>
+            <h3>Vesi</h3>
             
             <div className="form-group">
               <label htmlFor="water_temperature">🌡️ Veden lämpötila (°C)</label>
@@ -148,7 +148,7 @@ const NewAvantoForm = () => {
           </div>
 
           <div className="form-section">
-            <h3>Kokemus</h3>
+            <h3>Fiilis</h3>
             
             <div className="form-group">
               <label htmlFor="feeling_before">😰 Fiilis ennen (1–10)</label>
@@ -163,7 +163,7 @@ const NewAvantoForm = () => {
                   max="10"
                   step="1"
                 />
-                <span className="rating-value">{formData.feeling_before || '1'}</span>
+                <span className="rating-value">{formData.feeling_before || '5'}</span>
               </div>
             </div>
 
@@ -180,7 +180,7 @@ const NewAvantoForm = () => {
                   max="10"
                   step="1"
                 />
-                <span className="rating-value">{formData.feeling_after || '10'}</span>
+                <span className="rating-value">{formData.feeling_after || '5'}</span>
               </div>
             </div>
 
@@ -233,7 +233,7 @@ const NewAvantoForm = () => {
             )}
           </div>
 
-          <div className="form-section">
+          {/* <div className="form-section">
             <h3>Muuta</h3>
             
             <div className="form-group">
@@ -247,7 +247,7 @@ const NewAvantoForm = () => {
                 placeholder="/uploads/selfie.jpg"
               />
             </div>
-          </div>
+          </div> */}
 
           <div className="form-actions">
             <button 
