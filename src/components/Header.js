@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 import './Header.css'
@@ -15,9 +16,9 @@ const Header = () => {
     <div className="header-content">
       <div className="logo">
         <span className="logo-icon">🧊</span>
-        <a href="/dashboard">
-        <h1>AvantoTracker</h1>
-        </a>
+        <Link to="/dashboard">
+          <h1>AvantoTracker</h1>
+        </Link>
       </div>
       <span className="welcome-text">Tervetuloa, {user?.name}!</span>
       <div className="user-menu">

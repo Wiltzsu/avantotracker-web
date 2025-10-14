@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       // Clear any previous error messages
       setError(null);
       
-      // Send login request to API with user credentials (api.js)
+      // Send login request to the API with user credentials (api.js)
       // credentials = { email: "john@example.com", password: "password123" }
       const response = await authAPI.login(credentials);
 
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
       setUserData(userData);
 
       // Update the user state in React context
-      // This riggers re-render of components that use useAuth()
+      // This triggers re-render of components that use useAuth()
       setUser(userData);
       
       // Return success result to Login component

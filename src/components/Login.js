@@ -20,7 +20,7 @@ const Login = () => {
   // Get navigation function from React Router
   const navigate = useNavigate();
 
-  // Handle input field changes (when user types)
+  // Handle input field changes when user types
   const handleChange = (e) => {
     setFormData({
       ...formData,                      // Keep existing form data
@@ -28,11 +28,11 @@ const Login = () => {
     });
   };
 
-  // Handle form submission (when user clicks "Sign In")
+  // Handle form submission when user signs in
   const handleSubmit = async (e) => {
     e.preventDefault();                   // Prevent page refresh
-    const result = await login(formData); // Call login function with form data
-    if (result.success) {                 // If login successful
+    const result = await login(formData); // Call login function with form data (AuthContext.js)
+    if (result.success) {                 
       navigate('/dashboard');             // Redirect to dashboard page
     }
   };
@@ -121,14 +121,14 @@ const Login = () => {
                   )}
                 </button>
 
-                <div className="login-footer">
+                {/* <div className="login-footer">
                   <p>
                     Ei käyttäjää?{' '}
                     <Link to="/register" className="register-link">
                       Rekisteröidy
                     </Link>
                   </p>
-                </div>
+                </div> */}
               </form>
             </div>
           </div>

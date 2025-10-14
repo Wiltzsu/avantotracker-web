@@ -1,8 +1,9 @@
 import axios from 'axios';
 
+// Base URL for the backend API, injected at build time
 const API_BASE = process.env.REACT_APP_API_URL;
 
-// Create axios instance with default config
+// Create axios instance for all API calls
 const apiClient = axios.create({
   baseURL: API_BASE,
   headers: {
@@ -10,7 +11,8 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor to add auth token
+// Request interceptor: attach Bearer token (if present) to every request.
+// Token is stored in localStorage by AuthContext after login
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('auth_token');
@@ -24,7 +26,8 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle errors
+// Response interceptor: handle global auth failures.
+// If the server returns 401 (expired/invalid token), clear local session and go to login
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -38,7 +41,7 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Auth service
+// Auth API: functions called by AuthContext to hit backend endpoints
 export const authAPI = {
   register: (userData) => apiClient.post('/register', userData),
   login: (credentials) => apiClient.post('/login', credentials),
@@ -46,7 +49,7 @@ export const authAPI = {
   me: () => apiClient.get('/me')
 };
 
-// Avanto service  
+// Avanto API: CRUD endpoints for avanto resources
 export const avantoAPI = {
   getAll: () => apiClient.get('/v1/avanto'),
   create: (data) => apiClient.post('/v1/avanto', data),

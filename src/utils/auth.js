@@ -2,10 +2,8 @@ import axios from 'axios';
 
 export const setAuthToken = (token) => {
   if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     localStorage.setItem('auth_token', token);
   } else {
-    delete axios.defaults.headers.common['Authorization'];
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_data');
   }
