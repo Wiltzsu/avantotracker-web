@@ -8,7 +8,7 @@ import './NewAvantoForm.css';
 
 const NewAvantoForm = () => {
   const [formData, setFormData] = useState({
-    date: '',
+    date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
     location: '',
     water_temperature: '',
     duration_minutes: '',
