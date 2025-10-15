@@ -33,6 +33,10 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+  }
 }
 
 .logo a {
@@ -56,6 +60,12 @@
   align-items: center;
   gap: 6px;
   transition: all 0.2s ease;
+
+  @media (max-width: 480px) {
+    padding: 4px 8px;
+    font-size: 1rem;
+    font-weight: 400;
+  }
 }
 
 .logout-button:hover {
@@ -69,4 +79,8 @@
   text-align: right;
   flex: 1;
   margin-right: 1rem;
+
+  @media (max-width: 768px) {
+    display: none
+  }
 }

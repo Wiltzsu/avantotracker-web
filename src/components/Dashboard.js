@@ -31,6 +31,8 @@ const Dashboard = () => {
       <div className="dashboard-container">
         {/* Hero Section */}
         <section className="dashboard-hero">
+        <div className="ice-lake">
+          </div>
           <div className="hero-content">
             <h1>Tervetuloa takaisin! 👋</h1>
             <p>Hallinnoi avantokäyntejä, tarkastele trendejä ja tilastoja alla olevista toiminnoista.</p>
@@ -70,6 +72,7 @@ const Dashboard = () => {
               </Link>
             </div>
           </section>
+
 
           {/* Stats Grid 
           <section className="stats-section">
