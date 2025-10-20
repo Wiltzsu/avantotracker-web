@@ -53,10 +53,6 @@ export const authAPI = {
 export const avantoAPI = {
   getAll: () => apiClient.get('/v1/avanto'),
   create: (data) => apiClient.post('/v1/avanto', data),
-  getById: (id) => apiClient.get(`/v1/avanto/${id}`),
-  update: (id, data) => apiClient.put(`/v1/avanto/${id}`, data),
-  delete: (id) => apiClient.delete(`/v1/avanto/${id}`),
-  getUserAvantos: (userId) => apiClient.get(`/v1/avanto/user/${userId}`)
 };
 
 export default apiClient;

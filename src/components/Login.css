@@ -4,8 +4,13 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
-  padding: 20px;
+  min-height: 100vh;
+  background:
+  linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%),
+  url('../lake-mountains.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;  padding: 20px;
 }
 
 .login-background {

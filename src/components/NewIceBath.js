@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { avantoAPI } from '../services/api';
+import { avantoAPI } from '../services/api.js';
 import { useNavigate } from 'react-router-dom';
 
 import Header from './Header.js';
 import Footer from './Footer.js';
-import './NewAvantoForm.css';
+import './NewIceBath.css';
 
-const NewAvantoForm = () => {
+const NewIceBath = () => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
     location: '',
@@ -273,4 +273,4 @@ const NewAvantoForm = () => {
   );
 };
 
-export default NewAvantoForm;
+export default NewIceBath;
