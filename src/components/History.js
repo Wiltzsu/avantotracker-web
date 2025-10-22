@@ -10,35 +10,22 @@ const History = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // useEffect runs after component renders, async/await keeps UI responsive during API calls
     const fetchIceBaths = async () => {
       try {
-        setLoading(true);
+        setLoading(true); // Show loading spinner
         const response = await avantoAPI.getAll();
-        
-        // Handle both dev and production response structures
-        let iceBathsData;
-        
-        if (Array.isArray(response?.data?.data?.data)) {
-          // Production structure: response.data.data.data = [...]
-          iceBathsData = response.data.data.data;
-        } else if (Array.isArray(response?.data?.data)) {
-          // Dev structure: response.data.data = [...]
-          iceBathsData = response.data.data;
-        } else {
-          iceBathsData = [];
-        }
-        
-        setIceBaths(iceBathsData);
+        setIceBaths(response.data.data ?? []);
       } catch (err) {
         setError(err.message);
-        setIceBaths([]);
+        setIceBaths([]); // Reset to empty array on error
       } finally {
-        setLoading(false);
+        setLoading(false); // Hide loading spinner
       }
     };
 
     fetchIceBaths();
-  }, []);
+  }, []); // Run once on mount
 
   const formatDuration = (minutes, seconds) => {
     if (seconds && seconds > 0) {
