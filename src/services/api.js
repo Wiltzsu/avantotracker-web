@@ -51,7 +51,9 @@ export const authAPI = {
 
 // Avanto API: CRUD endpoints for avanto resources
 export const avantoAPI = {
-  getAll: () => apiClient.get('/v1/avanto'),
+  getAll: (page, perPage) => apiClient.get('/v1/avanto', {
+    params: { page, per_page: perPage }
+  }),
   create: (data) => apiClient.post('/v1/avanto', data),
 };
 

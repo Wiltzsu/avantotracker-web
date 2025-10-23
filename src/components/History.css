@@ -282,3 +282,65 @@
     gap: 0.2rem;
   }
 }
+
+/* Pagination styles */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid #2b3546;
+  margin-top: 1rem;
+}
+
+.page-btn {
+  background: #374151;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.page-num {
+  background: #1f2937;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-num:hover {
+  background: #4b5563;
+}
+
+.page-num.active {
+  background: #667eea;
+  border-color: #667eea;
+}

@@ -8,14 +8,22 @@ const History = () => {
   const [iceBaths, setIceBaths] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const perPage = 10;
 
   useEffect(() => {
     // useEffect runs after component renders, async/await keeps UI responsive during API calls
     const fetchIceBaths = async () => {
       try {
         setLoading(true); // Show loading spinner
-        const response = await avantoAPI.getAll();
+        const response = await avantoAPI.getAll(currentPage, perPage);
+
         setIceBaths(response.data.data ?? []);
+        setTotalPages(response.data.meta?.last_page ?? 1);
+        setTotal(response.data.meta?.total ?? 0);
+
       } catch (err) {
         setError(err.message);
         setIceBaths([]); // Reset to empty array on error
@@ -25,7 +33,23 @@ const History = () => {
     };
 
     fetchIceBaths();
-  }, []); // Run once on mount
+  }, [currentPage]); // Re-fetch when page changes
+
+  const goToPage = (page) => {
+    setCurrentPage(page);
+  }
+
+  const goPrev = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   const formatDuration = (minutes, seconds) => {
     if (seconds && seconds > 0) {
@@ -156,6 +180,41 @@ const History = () => {
                   </div>
                 );
               })
+            )}
+
+            {/* Pagination controls */}
+            {totalPages > 1 && (
+              <div className="pagination-bar">
+                <button
+                  className="page-btn"
+                  onClick={goPrev}
+                  disabled={currentPage <= 1}
+                >
+                  Edellinen
+                </button>
+                <button
+                  className="page-btn"
+                  onClick={goNext}
+                  disabled={currentPage >= totalPages}
+                >
+                  Seuraava
+                </button>
+              </div>
+            )}
+
+          {/* Page numbers for small page counts */}
+          {totalPages <= 7 && totalPages > 1 && (
+              <div className="page-numbers">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    className={`page-num ${page === currentPage ? 'active' : ''}`}
+                    onClick={() => goToPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         </div>
