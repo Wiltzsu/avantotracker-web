@@ -1,0 +1,241 @@
+.icebath-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+  color: #e5e7eb;
+  padding: 2rem 0;
+}
+
+.avanto-detail-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.avanto-detail-card h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 2rem 0;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.avanto-info {
+  background: #1f2937;
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid #374151;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.info-section {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.info-section h3 {
+  color: #f3f4f6;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.info-section p {
+  color: #9ca3af;
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.stat-card {
+  background: #111827;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #374151;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-label {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.stat-value {
+  color: #f3f4f6;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.temperature {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.temp-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.duration-info {
+  background: #111827;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left: 4px solid #667eea;
+}
+
+.feelings-section {
+  background: #111827;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid #10b981;
+}
+
+.feelings-section h4 {
+  color: #f3f4f6;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.feeling-item {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background: #1f2937;
+  border-radius: 6px;
+  border-left: 3px solid #10b981;
+}
+
+.sauna-info {
+  background: #111827;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid #f59e0b;
+}
+
+.sauna-info h4 {
+  color: #f3f4f6;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.sauna-yes {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.sauna-no {
+  color: #6b7280;
+}
+
+.swear-words {
+  background: #111827;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid #ef4444;
+  font-style: italic;
+}
+
+.swear-words h4 {
+  color: #f3f4f6;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.swear-words p {
+  color: #ef4444;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #374151;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  background: #1f2937;
+  border-radius: 12px;
+  border: 1px solid #374151;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.error-message h2 {
+  color: #ef4444;
+  margin: 0 0 1rem 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .avanto-detail-card {
+    padding: 0 0.5rem;
+  }
+
+  .avanto-detail-card h2 {
+    font-size: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .avanto-info {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .icebath-container {
+    padding: 1rem 0;
+  }
+
+  .avanto-detail-card h2 {
+    font-size: 1.75rem;
+  }
+
+  .avanto-info {
+    padding: 1rem;
+  }
+}

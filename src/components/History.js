@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import Header from './Header.js';
 import Footer from './Footer.js';
 import { avantoAPI } from '../services/api.js';
 import './History.css';
+import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters.js';
 
 const History = () => {
   const [iceBaths, setIceBaths] = useState([]);
@@ -14,7 +16,7 @@ const History = () => {
   const perPage = 10;
 
   useEffect(() => {
-    // useEffect runs after component renders, async/await keeps UI responsive during API calls
+    // Load ice bath history for current page
     const fetchIceBaths = async () => {
       try {
         setLoading(true); // Show loading spinner
@@ -50,20 +52,6 @@ const History = () => {
       setCurrentPage(currentPage + 1);
     }
   };
-
-  const formatDuration = (minutes, seconds) => {
-    if (seconds && seconds > 0) {
-      return `${minutes} min ${seconds} s`;
-    }
-    return `${minutes} min`;
-  }
-
-  const getTemperatureColor = (temp) => {
-    if (temp <= 2) return '#3b82f6'; // Blue for very cold
-    if (temp <= 5) return '#06b6d4'; // Cyan for cold
-    if (temp <= 8) return '#10b981'; // Green for cool
-    return '#f59e0b'; // Orange for wamer
-  }
 
   if (loading) {
     return (
@@ -107,10 +95,8 @@ const History = () => {
             <div className="history-header-row">
               <div className="item-main">
                 <div className="location-date header-cell">Sijainti ja päivämäärä</div>
-                <div className="temperature header-cell">Veden lämpötila</div>
                 <div className="duration header-cell">Aika</div>
-                <div className="feelings header-cell">Fiilis</div>
-                <div className="sauna header-cell">Sauna</div>
+                <div className="temperature header-cell">Veden lämpötila</div>
               </div>
             </div>
 
@@ -122,62 +108,30 @@ const History = () => {
               </div>
             ) : (
               iceBaths.map((iceBath) => {
-                const formattedDate = new Date(iceBath.date).toLocaleDateString('de-DE', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric'
-                });
+                const formattedDate = formatDate(iceBath.date);
 
                 return (
-                  <div key={iceBath.avanto_id} className="history-item">
-                    <div className="item-main">
-                      <div className="location-date">
-                        <span className="location">{iceBath.location}</span>
-                        <span className="date">{formattedDate}</span>
-                      </div>
-                      <div className="temperature">
-                        <span 
-                          className="temp-badge"
-                          style={{ backgroundColor: getTemperatureColor(iceBath.water_temperature) }}
-                        >
-                          {iceBath.water_temperature}°C
-                        </span>
-                      </div>
-                      <div className="duration">
-                        {formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}
-                      </div>
-                      <div className="feelings">
-                        {iceBath.feeling_before && iceBath.feeling_after ? (
-                          <div>
-                            <span className="feeling-before">Ennen: {iceBath.feeling_before}/10</span>
-                            <span className="feeling-after">Jälkeen: {iceBath.feeling_after}/10</span>
-                          </div>
-                        ) : (
-                          ''
-                        )}
-              
-                      </div>
-                      <div className="sauna">
-                        {iceBath.sauna ? (
-                          <span className="sauna-yes">
-                            🧖‍♀️ {iceBath.sauna_duration}
-                            {iceBath.sauna_duration ? (
-                              ' min'
-                            ) : (
-                              ''
-                            )}
+                  <Link key={iceBath.avanto_id} to={`/avanto/${iceBath.avanto_id}`} style={{ textDecoration: 'none' }}>  
+                    <div key={iceBath.avanto_id} className="history-item">
+                      <div className="item-main">
+                        <div className="location-date">
+                          <span className="location">{iceBath.location}</span>
+                          <span className="date">{formattedDate}</span>
+                        </div>
+                        <div className="duration">
+                          {formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}
+                        </div>
+                        <div className="temperature">
+                          <span 
+                            className="temp-badge"
+                            style={{ backgroundColor: getTemperatureColor(iceBath.water_temperature) }}
+                          >
+                            {iceBath.water_temperature}°C
                           </span>
-                        ) : (
-                          <span className="sauna-no">Ei saunaa</span>
-                        )}
+                        </div>
                       </div>
                     </div>
-                    {iceBath.swear_words && (
-                      <div className="swear-words">
-                        @#$% "{iceBath.swear_words}"
-                      </div>
-                    )}
-                  </div>
+                  </Link>
                 );
               })
             )}

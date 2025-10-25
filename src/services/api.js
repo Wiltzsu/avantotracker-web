@@ -55,6 +55,7 @@ export const avantoAPI = {
     params: { page, per_page: perPage }
   }),
   create: (data) => apiClient.post('/v1/avanto', data),
+  getById: (id) => apiClient.get(`/v1/avanto/${id}`),
 };
 
 export default apiClient;

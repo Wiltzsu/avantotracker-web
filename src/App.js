@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import NewIceBath from './components/NewIceBath';
 import History from './components/History';
+import IceBathDetail from './components/IceBathDetail';
 import './App.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/new" element={<NewIceBath />} />
               <Route path="/history" element={<History />} />
+              <Route path="/avanto/:id" element={<IceBathDetail />} /> 
             </Route>
 
             {/* Default redirect */}

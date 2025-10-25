@@ -6,7 +6,7 @@
 }
 
 .history-wrapper {
-  max-width: 1000px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -113,21 +113,21 @@
 
 .item-main {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.5fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
   align-items: center;
 }
 
 .history-header-row {
   position: sticky;
-  top: 0;                /* keeps labels visible when scrolling */
+  top: 0; /* keeps labels visible when scrolling */
   z-index: 1;
   background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
   padding: 0.25rem 0.75rem 0.5rem 0.75rem;
 }
 
 .history-header-row .item-main {
-  grid-template-columns: 2fr 1fr 1fr 1.5fr 1fr; /* match rows */
+  grid-template-columns: 1fr 1fr 1fr; /* match rows */
   border-bottom: 1px solid #2b3546;
 }
 
@@ -142,13 +142,6 @@
 /* keep header aligned with row padding */
 .history-item {
   padding: 1rem 1.5rem;
-}
-
-/* mobile: hide header row since items stack vertically */
-@media (max-width: 768px) {
-  .history-header-row {
-    display: none;
-  }
 }
 
 .location-date {
@@ -188,51 +181,6 @@
   font-weight: 500;
 }
 
-.feelings {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  font-size: 0.9rem;
-}
-
-.feeling-before,
-.feeling-after {
-  display: block;
-}
-
-.feeling-before {
-  color: #fbbf24;
-}
-
-.feeling-after {
-  color: #10b981;
-}
-
-.sauna {
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.sauna-yes {
-  color: #f59e0b;
-  font-weight: 500;
-}
-
-.sauna-no {
-  color: #6b7280;
-}
-
-.swear-words {
-  margin-top: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  background: #111827;
-  border-radius: 8px;
-  border-left: 3px solid #ef4444;
-  color: #ef4444;
-  font-style: italic;
-  font-size: 0.9rem;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .history-wrapper {
@@ -244,19 +192,12 @@
   }
 
   .item-main {
-    grid-template-columns: 1fr;
     gap: 0.75rem;
     text-align: center;
   }
 
   .location-date {
     align-items: center;
-  }
-
-  .feelings {
-    flex-direction: row;
-    justify-content: center;
-    gap: 1rem;
   }
 
   .history-item {
@@ -275,11 +216,6 @@
 
   .history-header h1 {
     font-size: 1.75rem;
-  }
-
-  .feelings {
-    flex-direction: column;
-    gap: 0.2rem;
   }
 }
 
