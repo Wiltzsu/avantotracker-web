@@ -38,9 +38,4 @@ jobs:
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SSH connection test successful'"
         
         # Deploy
-        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
-          echo "Connected successfully!"
-          cd /var/www/avantotracker-web/
-          git pull origin master
-          cp -r build/* /var/www/
-        EOF
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "cd /var/www/avantotracker-web/ && git pull origin master && cp -r build/* /var/www/"
