@@ -25,12 +25,14 @@ jobs:
       run: npm run build
     
     - name: Deploy to server
-      uses: appleboy/ssh-action@v0.1.5
+      uses: appleboy/ssh-action@v0.1.8
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
+        debug: true
         script: |
+          echo "Connected successfully!"
           cd /var/www/avantotracker-web/
           git pull origin master
           cp -r build/* /var/www/
