@@ -17,7 +17,7 @@ const Header = () => {
       <div className="logo">
         <span className="logo-icon">🧊</span>
         <Link to="/dashboard">
-          <h1>AvantoTracker</h1>
+          <h1>AvantoTrackerr</h1>
         </Link>
       </div>
       <span className="welcome-text">Tervetuloa, {user?.name}!</span>
