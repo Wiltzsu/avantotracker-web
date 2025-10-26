@@ -26,16 +26,8 @@ jobs:
     
     - name: Deploy to server
       run: |
-        # Setup SSH
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        
-        # Add to known hosts
         ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-        
-        # Test connection first
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SSH connection test successful'"
-        
-        # Copy build files to server
-        scp -o StrictHostKeyChecking=no -r build/* ${{ secrets.USER }}@${{ secrets.HOST }}:/var/www/
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'test'"
