@@ -23,20 +23,13 @@ jobs:
     
     - name: Build React app
       run: npm run build
-    
+
     - name: Deploy to server
       run: |
         mkdir -p ~/.ssh
-        echo "$SSH_KEY" > ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
         
-        # Debug: print what we're trying to connect to
-        echo "Attempting to connect as: $SSH_USER@$SSH_HOST"
-        
-        # Connect with verbose output
-        ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${SSH_USER}@${SSH_HOST} "echo 'Connected successfully!'"
-      env:
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-        SSH_HOST: ${{ secrets.HOST }}
-        SSH_USER: ${{ secrets.USER }}
+        # Copy build files to server
+        scp -o StrictHostKeyChecking=no -r build/* ${{ secrets.USER }}@${{ secrets.HOST }}:/var/www/
