@@ -29,20 +29,14 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        
-        # Debug: check if key file looks valid
-        echo "Key file first line:"
-        head -n 1 ~/.ssh/id_rsa
-        echo "Key file last line:"
-        tail -n 1 ~/.ssh/id_rsa
-        
-        # Try to validate the key
-        ssh-keygen -l -f ~/.ssh/id_rsa || echo "Key validation failed"
-        
-        # Add known hosts
         ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
         
-        # Try connection with verbose output
-        ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'Connected successfully!'"
+        # Debug: print what we're trying to connect to
+        echo "Attempting to connect as: $SSH_USER@$SSH_HOST"
+        
+        # Connect with verbose output
+        ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${SSH_USER}@${SSH_HOST} "echo 'Connected successfully!'"
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
+        SSH_HOST: ${{ secrets.HOST }}
+        SSH_USER: ${{ secrets.USER }}
