@@ -25,14 +25,22 @@ jobs:
       run: npm run build
     
     - name: Deploy to server
-      uses: appleboy/ssh-action@v0.1.8
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        key: ${{ secrets.SSH_KEY }}
-        debug: true
-        script: |
+      run: |
+        # Setup SSH
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        
+        # Add to known hosts
+        ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+        
+        # Test connection first
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SSH connection test successful'"
+        
+        # Deploy
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
           echo "Connected successfully!"
           cd /var/www/avantotracker-web/
           git pull origin master
           cp -r build/* /var/www/
+        EOF
