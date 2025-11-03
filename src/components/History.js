@@ -4,7 +4,7 @@ import Header from './Header.js';
 import Footer from './Footer.js';
 import { avantoAPI } from '../services/api.js';
 import './History.css';
-import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters.js';
+import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters.ts';
 
 const History = () => {
   const [iceBaths, setIceBaths] = useState([]);
