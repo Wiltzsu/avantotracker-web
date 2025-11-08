@@ -31,5 +31,9 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
         
-        # Copy build files to server
-        scp -o StrictHostKeyChecking=no -r build/* ${{ secrets.USER }}@${{ secrets.HOST }}:/var/www/
+        # Clean old build and copy new build files to server
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "rm -rf /var/www/avantotracker-web/build/*"
+        scp -o StrictHostKeyChecking=no -r build/* ${{ secrets.USER }}@${{ secrets.HOST }}:/var/www/avantotracker-web/build/
+        
+        # Restart nginx
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "sudo systemctl restart nginx"
