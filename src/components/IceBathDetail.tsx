@@ -2,29 +2,34 @@ import { useState, useEffect } from 'react';
 import { Link, useParams } from "react-router-dom";
 import Header from './Header.js';
 import Footer from './Footer.js';
-import { avantoAPI } from '../services/api.js';
+import { avantoAPI, AvantoResponse } from '../services/api';
 import './IceBathDetail.css';
-import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters.ts';
+import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters';
 
-const IceBathDetail = () => {
-  const { id } = useParams();
-  const [iceBath, setIceBath] = useState();
+const IceBathDetail: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [iceBath, setIceBath] = useState<AvantoResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     // Load single ice bath
     const fetchIceBath = async () => {
+      if (!id) {
+        setError('Ice bath ID is missing');
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true); // Show spinner while fetching data
         const response = await avantoAPI.getById(id);
 
-        setIceBath(response.data);
-
-        console.log(response);
+        setIceBath(response);
 
       } catch (err) {
-        setError(err.message);
+        const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+        setError(errorMessage);
         setIceBath(null); // Set null if no ice bath is found
       } finally {
         setLoading(false); // Hide loading spinner
@@ -71,8 +76,8 @@ const IceBathDetail = () => {
           {iceBath && (
             <div className="avanto-info">
               <div className="info-section">
-                <h3>{iceBath.data.location}</h3>
-                <p>{formatDate(iceBath.data.date)}</p>
+                <h3>{iceBath.location}</h3>
+                <p>{formatDate(iceBath.date)}</p>
               </div>
   
               <div className="stats-grid">
@@ -81,9 +86,9 @@ const IceBathDetail = () => {
                   <div className="temperature">
                     <span 
                       className="temp-badge"
-                      style={{ backgroundColor: getTemperatureColor(iceBath.data.water_temperature) }}
+                      style={{ backgroundColor: getTemperatureColor(iceBath.water_temperature) }}
                     >
-                      {iceBath.data.water_temperature}°C
+                      {iceBath.water_temperature}°C
                     </span>
                   </div>
                 </div>
@@ -91,29 +96,29 @@ const IceBathDetail = () => {
                 <div className="stat-card">
                   <span className="stat-label">Kesto</span>
                   <span className="stat-value">
-                    {formatDuration(iceBath.data.duration_minutes, iceBath.data.duration_seconds)}
+                    {formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}
                   </span>
                 </div>
   
                 <div className="stat-card">
                   <span className="stat-label">Sauna</span>
                   <span className="stat-value">
-                    {iceBath.data.sauna ? 'Kyllä' : 'Ei'}
+                    {iceBath.sauna ? 'Kyllä' : 'Ei'}
                   </span>
                 </div>
               </div>
   
-              {(iceBath.data.feeling_before || iceBath.data.feeling_after) && (
+              {(iceBath.feeling_before || iceBath.feeling_after) && (
                 <div className="feelings-section">
                   <h4>Fiilis</h4>
-                  {iceBath.data.feeling_before && (
+                  {iceBath.feeling_before && (
                     <div className="feeling-item">
-                      <strong>Ennen:</strong> {iceBath.data.feeling_before}
+                      <strong>Ennen:</strong> {iceBath.feeling_before}
                     </div>
                   )}
-                  {iceBath.data.feeling_after && (
+                  {iceBath.feeling_after && (
                     <div className="feeling-item">
-                      <strong>Jälkeen:</strong> {iceBath.data.feeling_after}
+                      <strong>Jälkeen:</strong> {iceBath.feeling_after}
                     </div>
                   )}
                 </div>
@@ -121,18 +126,18 @@ const IceBathDetail = () => {
   
               <div className="sauna-info">
                 <h4>Sauna</h4>
-                <p className={iceBath.data.sauna ? 'sauna-yes' : 'sauna-no'}>
-                  {iceBath.data.sauna ? 'Kyllä' : 'Ei'}
+                <p className={iceBath.sauna ? 'sauna-yes' : 'sauna-no'}>
+                  {iceBath.sauna ? 'Kyllä' : 'Ei'}
                 </p>
-                {iceBath.data.sauna_duration && (
-                  <p>Kesto: {iceBath.data.sauna_duration} min</p>
+                {iceBath.sauna_duration && (
+                  <p>Kesto: {iceBath.sauna_duration} min</p>
                 )}
               </div>
   
-              {iceBath.data.swear_words && (
+              {iceBath.swear_words && (
                 <div className="swear-words">
                   <h4>Kirosanat</h4>
-                  <p>"{iceBath.data.swear_words}"</p>
+                  <p>"{iceBath.swear_words}"</p>
                 </div>
               )}
             </div>

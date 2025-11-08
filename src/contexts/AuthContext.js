@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       // Clear any previous error messages
       setError(null);
       
-      // Send login request to the API with user credentials (api.js)
+      // Send login request to the API with user credentials (api.ts)
       // credentials = { email: "john@example.com", password: "password123" }
       const response = await authAPI.login(credentials);
 

@@ -2,17 +2,29 @@ import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import Header from './Header.js';
 import Footer from './Footer.js';
-import { avantoAPI } from '../services/api.js';
+import { avantoAPI } from '../services/api';
 import './History.css';
-import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters.ts';
+import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters';
 
-const History = () => {
-  const [iceBaths, setIceBaths] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
+// Define the type for ice bath data
+interface IceBath {
+  avanto_id: string | number;
+  user_id: string | number;
+  date: string;
+  location: string;
+  water_temperature: number | null;
+  air_temperature?: number | null;
+  duration_minutes?: number;
+  duration_seconds?: number;
+  notes?: string;
+}
+
+const History: React.FC = () => {
+  const [iceBaths, setIceBaths] = useState<IceBath[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const perPage = 10;
 
   useEffect(() => {
@@ -22,12 +34,12 @@ const History = () => {
         setLoading(true); // Show loading spinner
         const response = await avantoAPI.getAll(currentPage, perPage);
 
-        setIceBaths(response.data.data ?? []);
-        setTotalPages(response.data.meta?.last_page ?? 1);
-        setTotal(response.data.meta?.total ?? 0);
+        setIceBaths(response.data ?? []);
+        setTotalPages(response.meta?.last_page ?? 1);
 
       } catch (err) {
-        setError(err.message);
+        const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+        setError(errorMessage);
         setIceBaths([]); // Reset to empty array on error
       } finally {
         setLoading(false); // Hide loading spinner
@@ -37,7 +49,7 @@ const History = () => {
     fetchIceBaths();
   }, [currentPage]); // Re-fetch when page changes
 
-  const goToPage = (page) => {
+  const goToPage = (page: number) => {
     setCurrentPage(page);
   }
 
@@ -122,12 +134,14 @@ const History = () => {
                           {formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}
                         </div>
                         <div className="temperature">
-                          <span 
-                            className="temp-badge"
-                            style={{ backgroundColor: getTemperatureColor(iceBath.water_temperature) }}
-                          >
-                            {iceBath.water_temperature}°C
-                          </span>
+                          {iceBath.water_temperature !== null && (
+                            <span 
+                              className="temp-badge"
+                              style={{ backgroundColor: getTemperatureColor(iceBath.water_temperature ?? 0) }}
+                            >
+                              {iceBath.water_temperature}°C
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

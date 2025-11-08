@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import NewIceBath from './components/NewIceBath';
+import Stats from './components/Stats';
 import History from './components/History';
 import IceBathDetail from './components/IceBathDetail';
 import './App.css';
@@ -22,6 +23,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/new" element={<NewIceBath />} />
+              <Route path="/stats" element={<Stats />} />
               <Route path="/history" element={<History />} />
               <Route path="/avanto/:id" element={<IceBathDetail />} /> 
             </Route>
