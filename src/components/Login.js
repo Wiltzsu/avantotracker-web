@@ -5,31 +5,28 @@ import Footer from './Footer.js';
 import './Login.css';
 
 const Login = () => {
-  // State to store form input values (email and password)
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
 
-  // State to control password visibility (show/hide password)
   const [showPassword, setShowPassword] = useState(false);
+  const [debugInfo, setDebugInfo] = useState(null); // Add debug state
   
-  // Get authentication functions and state from AuthContext
   const { login, loading, error } = useAuth();
-
-  // Get navigation function from React Router
   const navigate = useNavigate();
 
-  // Handle input field changes when user types
   const handleChange = (e) => {
     setFormData({
-      ...formData,                      // Keep existing form data
-      [e.target.name]: e.target.value   // Update the specific field that changed
+      ...formData,
+      [e.target.name]: e.target.value
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setDebugInfo(null); // Clear previous debug info
+    
     console.log('📱 Submitting login form');
     
     const result = await login(formData);
@@ -41,6 +38,13 @@ const Login = () => {
       navigate('/dashboard');
     } else {
       console.log('❌ Login failed:', result);
+      // Store debug info for display
+      setDebugInfo({
+        error: result.error,
+        statusCode: result.statusCode,
+        timestamp: new Date().toISOString(),
+        fullError: result.fullError
+      });
     }
   };
 
@@ -65,6 +69,49 @@ const Login = () => {
                   <div className="error-message">
                     <span className="error-icon">⚠️</span>
                     {error}
+                  </div>
+                )}
+
+                {/* Debug info display - shows detailed error on mobile */}
+                {debugInfo && (
+                  <div style={{
+                    background: '#1e293b',
+                    border: '1px solid #ef4444',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    marginBottom: '16px',
+                    fontSize: '11px',
+                    fontFamily: 'monospace',
+                    color: '#e5e7eb',
+                    overflow: 'auto',
+                    maxHeight: '200px'
+                  }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#ef4444' }}>
+                      🐛 Debug Info (Mobile):
+                    </div>
+                    <div style={{ marginBottom: '4px' }}>
+                      <strong>Status:</strong> {debugInfo.statusCode || 'N/A'}
+                    </div>
+                    <div style={{ marginBottom: '4px' }}>
+                      <strong>Time:</strong> {new Date(debugInfo.timestamp).toLocaleTimeString()}
+                    </div>
+                    <div style={{ marginBottom: '8px' }}>
+                      <strong>Error:</strong> {debugInfo.error}
+                    </div>
+                    {debugInfo.fullError && (
+                      <details style={{ marginTop: '8px' }}>
+                        <summary style={{ cursor: 'pointer', color: '#60a5fa' }}>
+                          Full Error Details
+                        </summary>
+                        <pre style={{ 
+                          margin: '8px 0 0 0', 
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-all'
+                        }}>
+                          {JSON.stringify(debugInfo.fullError, null, 2)}
+                        </pre>
+                      </details>
+                    )}
                   </div>
                 )}
 

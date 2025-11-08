@@ -32,15 +32,8 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      console.log('🔵 Login attempt:', { email: credentials.email });
-      
       const response = await authAPI.login(credentials);
-      
-      console.log('🟢 Login response:', response);
-      
       const { user: userData, token } = response;
-      
-      console.log('🟢 Extracted data:', { user: userData, token: token ? 'exists' : 'missing' });
       
       setAuthToken(token);
       setUserData(userData);
@@ -48,17 +41,10 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (err) {
-      // More detailed error logging
-      console.error('🔴 Login error:', err);
-      console.error('🔴 Error response:', err.response);
-      console.error('🔴 Error data:', err.response?.data);
-      console.error('🔴 Error status:', err.response?.status);
-      console.error('🔴 Error headers:', err.response?.headers);
-      
       const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
       setError(errorMessage);
       
-      // Return more detailed error info
+      // Return detailed error info
       return { 
         success: false, 
         error: errorMessage,
