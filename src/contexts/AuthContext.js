@@ -41,21 +41,44 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
+      // Detailed error categorization
+      let errorMessage = 'Login failed. Please try again.';
+      let errorType = 'unknown';
+      
+      if (err.response) {
+        // Server responded with error status
+        errorType = 'server_error';
+        errorMessage = err.response?.data?.message || `Server error (${err.response.status})`;
+      } else if (err.request) {
+        // Request was made but no response received
+        errorType = 'network_error';
+        errorMessage = 'Network error. Check your connection.';
+      } else {
+        // Something else happened
+        errorType = 'client_error';
+        errorMessage = err.message || 'Unknown error occurred';
+      }
+      
       setError(errorMessage);
       
       // Return detailed error info
       return { 
         success: false, 
         error: errorMessage,
+        errorType: errorType,
         statusCode: err.response?.status,
-        fullError: err.response?.data
+        fullError: {
+          hasResponse: !!err.response,
+          hasRequest: !!err.request,
+          message: err.message,
+          responseData: err.response?.data,
+          code: err.code
+        }
       };
     } finally {
       setLoading(false);
     }
   };
-
   const register = async (userData) => {
     try {
       setLoading(true);

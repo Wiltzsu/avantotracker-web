@@ -90,6 +90,9 @@ const Login = () => {
                       🐛 Debug Info (Mobile):
                     </div>
                     <div style={{ marginBottom: '4px' }}>
+                      <strong>Type:</strong> {debugInfo.errorType || 'N/A'}
+                    </div>
+                    <div style={{ marginBottom: '4px' }}>
                       <strong>Status:</strong> {debugInfo.statusCode || 'N/A'}
                     </div>
                     <div style={{ marginBottom: '4px' }}>
@@ -114,6 +117,7 @@ const Login = () => {
                     )}
                   </div>
                 )}
+                
 
                 <div className="form-group">
                   <label htmlFor="email">Sähköposti</label>
