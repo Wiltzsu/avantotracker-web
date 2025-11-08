@@ -29,39 +29,42 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      // Set loading state to true - this shows the spinner/loading UI
       setLoading(true);
-
-      // Clear any previous error messages
       setError(null);
       
-      // Send login request to the API with user credentials (api.ts)
-      // credentials = { email: "john@example.com", password: "password123" }
+      console.log('🔵 Login attempt:', { email: credentials.email });
+      
       const response = await authAPI.login(credentials);
-
-      // Extract user data and token from API response
-      // response.data = { user: {...}, token: "abc123", message: "Login successful" }
+      
+      console.log('🟢 Login response:', response);
+      
       const { user: userData, token } = response;
       
-      // Save the authentication token to localStorage and axios headers
-      // This allows future API requests to include the token
+      console.log('🟢 Extracted data:', { user: userData, token: token ? 'exists' : 'missing' });
+      
       setAuthToken(token);
-
-      // Save user data to localStorage for persistence
-      // User stays logged in even if they refresh the page
       setUserData(userData);
-
-      // Update the user state in React context
-      // This triggers re-render of components that use useAuth()
       setUser(userData);
       
-      // Return success result to Login component
-      // Login component uses this to decide whether to redirect
-      return { success: true, user: userData };
+      return { success: true };
     } catch (err) {
+      // More detailed error logging
+      console.error('🔴 Login error:', err);
+      console.error('🔴 Error response:', err.response);
+      console.error('🔴 Error data:', err.response?.data);
+      console.error('🔴 Error status:', err.response?.status);
+      console.error('🔴 Error headers:', err.response?.headers);
+      
       const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
       setError(errorMessage);
-      return { success: false, error: errorMessage };
+      
+      // Return more detailed error info
+      return { 
+        success: false, 
+        error: errorMessage,
+        statusCode: err.response?.status,
+        fullError: err.response?.data
+      };
     } finally {
       setLoading(false);
     }

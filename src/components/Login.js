@@ -28,12 +28,19 @@ const Login = () => {
     });
   };
 
-  // Handle form submission when user signs in
   const handleSubmit = async (e) => {
-    e.preventDefault();                   // Prevent page refresh
-    const result = await login(formData); // Call login function with form data (AuthContext.js)
-    if (result.success) {                 
-      navigate('/dashboard');             // Redirect to dashboard page
+    e.preventDefault();
+    console.log('📱 Submitting login form');
+    
+    const result = await login(formData);
+    
+    console.log('📱 Login result:', result);
+    
+    if (result.success) {
+      console.log('✅ Login successful, redirecting to dashboard');
+      navigate('/dashboard');
+    } else {
+      console.log('❌ Login failed:', result);
     }
   };
 
