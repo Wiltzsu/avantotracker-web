@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
       // Extract user data and token from API response
       // response.data = { user: {...}, token: "abc123", message: "Login successful" }
-      const { user: userData, token } = response.data;
+      const { user: userData, token } = response;
       
       // Save the authentication token to localStorage and axios headers
       // This allows future API requests to include the token
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       
       const response = await authAPI.register(userData);
-      const { user: newUser, token } = response.data;
+      const { user: newUser, token } = response;
       
       setAuthToken(token);
       setUserData(newUser);
