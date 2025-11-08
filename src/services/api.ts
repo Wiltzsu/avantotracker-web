@@ -163,22 +163,22 @@ apiClient.interceptors.response.use(
 // Auth API
 export const authAPI = {
   register: async (userData: UserData): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/register', userData);
+    const response = await apiClient.post<AuthResponse>('/api/register', userData);
     return response.data;
   },
   
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/login', credentials);
+    const response = await apiClient.post<AuthResponse>('/api/login', credentials);
     return response.data;
   },
   
   logout: async (): Promise<void> => {
-    await apiClient.post('/logout');
+    await apiClient.post('/api/logout');
     tokenStorage.remove();
   },
   
   me: async (): Promise<User> => {
-    const response = await apiClient.get<User>('/me');
+    const response = await apiClient.get<User>('/api/me');
     return response.data;
   }
 };
@@ -186,24 +186,24 @@ export const authAPI = {
 // Avanto API
 export const avantoAPI = {
   getAll: async (page?: number, perPage?: number): Promise<AvantoListResponse> => {
-    const response = await apiClient.get<AvantoListResponse>('/v1/avanto', {
+    const response = await apiClient.get<AvantoListResponse>('/api/v1/avanto', {
       params: { page, per_page: perPage }
     });
     return response.data;
   },
   
   create: async (data: AvantoData): Promise<AvantoResponse> => {
-    const response = await apiClient.post<AvantoResponse>('/v1/avanto', data);
+    const response = await apiClient.post<AvantoResponse>('/api/v1/avanto', data);
     return response.data;
   },
   
   getById: async (id: string | number): Promise<AvantoResponse> => {
-    const response = await apiClient.get<AvantoResponse>(`/v1/avanto/${id}`);
+    const response = await apiClient.get<AvantoResponse>(`/api/v1/avanto/${id}`);
     return response.data;
   },
   
   update: async (id: string | number, data: Partial<AvantoData>): Promise<AvantoResponse> => {
-    const response = await apiClient.put<AvantoResponse>(`/v1/avanto/${id}`, data);
+    const response = await apiClient.put<AvantoResponse>(`/api/v1/avanto/${id}`, data);
     return response.data;
   },
   
@@ -212,7 +212,7 @@ export const avantoAPI = {
   },
 
   stats: async (): Promise<AvantoStats> => {
-    const response = await apiClient.get<AvantoStatsResponse>(`/v1/stats`);
+    const response = await apiClient.get<AvantoStatsResponse>(`/api/v1/stats`);
     return response.data.data;
   }
 };
