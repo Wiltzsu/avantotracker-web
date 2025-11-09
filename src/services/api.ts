@@ -68,13 +68,13 @@ interface AvantoStatsResponse {
 }
 
 // Base URL for the backend API, injected at build time
-const API_BASE = process.env.REACT_APP_API_URL;
+const API_BASE = import.meta.env.VITE_API_URL;
 
 if (!API_BASE) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('REACT_APP_API_URL must be defined in production');
+  if (import.meta.env.MODE === 'production') {
+    throw new Error('VITE_API_URL must be defined in production');
   } else {
-    console.warn('REACT_APP_API_URL is not defined. API calls will fail.');
+    console.warn('VITE_API_URL is not defined. API calls will fail.');
   }
 }
 
