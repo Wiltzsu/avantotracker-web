@@ -29,56 +29,44 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
+      // Set loading state to true - this shows the spinner/loading UI
       setLoading(true);
+
+      // Clear any previous error messages
       setError(null);
       
+      // Send login request to the API with user credentials (api.ts)
+      // credentials = { email: "john@example.com", password: "password123" }
       const response = await authAPI.login(credentials);
+
+      // Extract user data and token from API response
+      // response.data = { user: {...}, token: "abc123", message: "Login successful" }
       const { user: userData, token } = response;
       
+      // Save the authentication token to localStorage and axios headers
+      // This allows future API requests to include the token
       setAuthToken(token);
+
+      // Save user data to localStorage for persistence
+      // User stays logged in even if they refresh the page
       setUserData(userData);
+
+      // Update the user state in React context
+      // This triggers re-render of components that use useAuth()
       setUser(userData);
       
-      return { success: true };
+      // Return success result to Login component
+      // Login component uses this to decide whether to redirect
+      return { success: true, user: userData };
     } catch (err) {
-      // Detailed error categorization
-      let errorMessage = 'Login failed. Please try again.';
-      let errorType = 'unknown';
-      
-      if (err.response) {
-        // Server responded with error status
-        errorType = 'server_error';
-        errorMessage = err.response?.data?.message || `Server error (${err.response.status})`;
-      } else if (err.request) {
-        // Request was made but no response received
-        errorType = 'network_error';
-        errorMessage = 'Network error. Check your connection.';
-      } else {
-        // Something else happened
-        errorType = 'client_error';
-        errorMessage = err.message || 'Unknown error occurred';
-      }
-      
+      const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
       setError(errorMessage);
-      
-      // Return detailed error info
-      return { 
-        success: false, 
-        error: errorMessage,
-        errorType: errorType,
-        statusCode: err.response?.status,
-        fullError: {
-          hasResponse: !!err.response,
-          hasRequest: !!err.request,
-          message: err.message,
-          responseData: err.response?.data,
-          code: err.code
-        }
-      };
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
   };
+
   const register = async (userData) => {
     try {
       setLoading(true);
