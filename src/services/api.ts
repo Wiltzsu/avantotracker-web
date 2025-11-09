@@ -47,6 +47,10 @@ export interface AvantoResponse {
   duration_seconds?: number;
 }
 
+interface AvantoResponseItem {
+  data: AvantoResponse;
+}
+
 interface AvantoListResponse {
   data: AvantoResponse[];
   meta?: {
@@ -198,8 +202,8 @@ export const avantoAPI = {
   },
   
   getById: async (id: string | number): Promise<AvantoResponse> => {
-    const response = await apiClient.get<AvantoResponse>(`/api/v1/avanto/${id}`);
-    return response.data;
+    const response = await apiClient.get<AvantoResponseItem>(`/api/v1/avanto/${id}`);
+    return response.data.data;
   },
   
   update: async (id: string | number, data: Partial<AvantoData>): Promise<AvantoResponse> => {
