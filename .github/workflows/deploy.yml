@@ -51,13 +51,6 @@ jobs:
 
         REMOTE="${DEPLOY_USER}@${DEPLOY_HOST}"
         REMOTE_DIR="/var/www/avantotracker-web/build"
-        STAGING_DIR="/tmp/avantotracker-deploy"
 
-        ssh -o StrictHostKeyChecking=no "$REMOTE" "rm -rf ${STAGING_DIR} && mkdir -p ${STAGING_DIR}"
-        scp -o StrictHostKeyChecking=no -r build/* "${REMOTE}:${STAGING_DIR}/"
-        ssh -o StrictHostKeyChecking=no "$REMOTE" "\
-          sudo mkdir -p ${REMOTE_DIR} && \
-          sudo rsync -a --delete ${STAGING_DIR}/ ${REMOTE_DIR}/ && \
-          sudo chown -R www-data:www-data ${REMOTE_DIR} && \
-          rm -rf ${STAGING_DIR}"
-        ssh -o StrictHostKeyChecking=no "$REMOTE" "sudo systemctl restart nginx"
+        ssh -o StrictHostKeyChecking=no "$REMOTE" "mkdir -p ${REMOTE_DIR} && rm -rf ${REMOTE_DIR}/*"
+        scp -o StrictHostKeyChecking=no -r build/* "${REMOTE}:${REMOTE_DIR}/"
