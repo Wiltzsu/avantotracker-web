@@ -12,6 +12,7 @@ import {
   STATS_RANGE_OPTIONS,
 } from '../utils/statsFormatters';
 import MoodChart from './MoodChart';
+import { getAchievementIcon } from '../utils/achievementIcons';
 import './Stats.css';
 
 const Stats: React.FC = () => {
@@ -233,21 +234,18 @@ const Stats: React.FC = () => {
               </section>
 
               <section className="achievements-section">
-                <h2 className="section-title">Saavutukset</h2>
+                <h2 className="section-title">
+                  Saavutukset (
+                  {stats.achievements.filter((achievement) => achievement.unlocked).length}/
+                  {stats.achievements.length})
+                </h2>
                 <div className="achievements-grid">
                   {stats.achievements.map((achievement) => (
                     <div
                       key={achievement.id}
                       className={`achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`}
                     >
-                      <div className="achievement-icon">
-                        {achievement.id === 'ice_king' && '🥶'}
-                        {achievement.id === 'endurance' && '⏱️'}
-                        {achievement.id === 'arctic_hero' && '❄️'}
-                        {achievement.id === 'week_warrior' && '🎯'}
-                        {achievement.id === 'sauna_regular' && '🧖'}
-                        {achievement.id === 'cold_heart' && '💙'}
-                      </div>
+                      <div className="achievement-icon">{getAchievementIcon(achievement.id)}</div>
                       <h3>{achievement.title}</h3>
                       <p>{achievement.description}</p>
                       <div className="achievement-badge">
