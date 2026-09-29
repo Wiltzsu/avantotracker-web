@@ -39,9 +39,40 @@ export interface AvantoResponse {
   sauna: boolean | null;
   sauna_duration: number | null;
   swear_words: number | null;
-  air_temperature?: number | null;
+  selfie_url?: string | null;
   duration_minutes?: number;
   duration_seconds?: number;
+}
+
+export interface HistoryFilters {
+  location?: string;
+  start_date?: string;
+  end_date?: string;
+  sauna?: boolean;
+}
+
+export interface MoodTimelinePoint {
+  avanto_id: number | string;
+  date: string;
+  feeling_before: number;
+  feeling_after: number;
+  mood_delta: number;
+}
+
+export interface PersonalRecord {
+  avanto_id: number | string;
+  date: string;
+  location: string | null;
+  value: number;
+  feeling_before?: number;
+  feeling_after?: number;
+}
+
+export interface PersonalRecords {
+  coldest_dip: PersonalRecord | null;
+  longest_dip: PersonalRecord | null;
+  most_swear_words: PersonalRecord | null;
+  best_mood_swing: PersonalRecord | null;
 }
 
 interface AvantoResponseItem {
@@ -100,6 +131,7 @@ export interface AvantoStats {
   location_breakdown: LocationBreakdownItem[];
   sauna_breakdown: SaunaBreakdown;
   achievements: Achievement[];
+  mood_timeline: MoodTimelinePoint[];
   period: {
     start_date: string | null;
     end_date: string | null;
@@ -139,6 +171,10 @@ interface AvantoStatsResponse {
 
 interface DashboardResponse {
   data: DashboardData;
+}
+
+interface RecordsResponse {
+  data: PersonalRecords;
 }
 
 export type StatsRange = 'all' | 'month' | '6months' | 'year';
@@ -259,10 +295,40 @@ export const authAPI = {
 };
 
 // Avanto API
+export const buildHistoryQueryParams = (
+  page: number,
+  perPage: number,
+  filters: HistoryFilters = {}
+): Record<string, string | number | boolean> => {
+  const params: Record<string, string | number | boolean> = {
+    page,
+    per_page: perPage,
+  };
+
+  if (filters.location?.trim()) {
+    params.location = filters.location.trim();
+  }
+  if (filters.start_date) {
+    params.start_date = filters.start_date;
+  }
+  if (filters.end_date) {
+    params.end_date = filters.end_date;
+  }
+  if (typeof filters.sauna === 'boolean') {
+    params.sauna = filters.sauna;
+  }
+
+  return params;
+};
+
 export const avantoAPI = {
-  getAll: async (page?: number, perPage?: number): Promise<AvantoListResponse> => {
+  getAll: async (
+    page = 1,
+    perPage = 10,
+    filters: HistoryFilters = {}
+  ): Promise<AvantoListResponse> => {
     const response = await apiClient.get<AvantoListResponse>('/api/v1/avanto', {
-      params: { page, per_page: perPage }
+      params: buildHistoryQueryParams(page, perPage, filters),
     });
     return response.data;
   },
@@ -295,6 +361,51 @@ export const avantoAPI = {
 
   dashboard: async (): Promise<DashboardData> => {
     const response = await apiClient.get<DashboardResponse>('/api/v1/dashboard');
+    return response.data.data;
+  },
+
+  records: async (): Promise<PersonalRecords> => {
+    const response = await apiClient.get<RecordsResponse>('/api/v1/records');
+    return response.data.data;
+  },
+
+  exportCsv: async (filters: HistoryFilters = {}): Promise<void> => {
+    const { page: _page, per_page: _perPage, ...exportParams } = buildHistoryQueryParams(
+      1,
+      100,
+      filters
+    );
+
+    const response = await apiClient.get<Blob>('/api/v1/avanto/export', {
+      params: exportParams,
+      responseType: 'blob',
+    });
+
+    const url = window.URL.createObjectURL(response.data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `avantotracker-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  },
+
+  uploadSelfie: async (id: string | number, file: File): Promise<AvantoResponse> => {
+    const formData = new FormData();
+    formData.append('selfie', file);
+
+    const response = await apiClient.post<AvantoMutationResponse>(
+      `/api/v1/avanto/${id}/selfie`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+
+    return response.data.data;
+  },
+
+  deleteSelfie: async (id: string | number): Promise<AvantoResponse> => {
+    const response = await apiClient.delete<AvantoMutationResponse>(`/api/v1/avanto/${id}/selfie`);
     return response.data.data;
   },
 };

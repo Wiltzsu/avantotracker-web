@@ -10,7 +10,7 @@ interface IceBathFormProps {
   submitLabel: string;
   submittingLabel: string;
   cancelTo: string;
-  onSubmit: (payload: AvantoPayload) => Promise<void>;
+  onSubmit: (payload: AvantoPayload, selfie?: File | null) => Promise<void>;
 }
 
 const IceBathForm: React.FC<IceBathFormProps> = ({
@@ -23,6 +23,7 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
   onSubmit,
 }) => {
   const [formData, setFormData] = useState<AvantoFormData>(initialData);
+  const [selfieFile, setSelfieFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
     setError(null);
 
     try {
-      await onSubmit(buildAvantoPayload(formData));
+      await onSubmit(buildAvantoPayload(formData), selfieFile);
     } catch (err) {
       console.error('Avanto form submit failed:', err);
       setError('Tallennus epäonnistui. Yritä uudelleen.');
@@ -187,6 +188,21 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
               min="0"
               step="1"
               placeholder="0"
+            />
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>Muisto</h3>
+
+          <div className="form-group">
+            <label htmlFor="selfie">📸 Selfie (valinnainen)</label>
+            <input
+              type="file"
+              id="selfie"
+              name="selfie"
+              accept="image/*"
+              onChange={(event) => setSelfieFile(event.target.files?.[0] ?? null)}
             />
           </div>
         </div>

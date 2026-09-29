@@ -13,6 +13,7 @@ const IceBathDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [uploadingSelfie, setUploadingSelfie] = useState(false);
   
   useEffect(() => {
     // Load single ice bath
@@ -40,6 +41,42 @@ const IceBathDetail: React.FC = () => {
 
     fetchIceBath();
   }, [id]); // Re-run whenever id changes
+
+  const handleSelfieUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!id || !file) {
+      return;
+    }
+
+    setUploadingSelfie(true);
+    try {
+      const updated = await avantoAPI.uploadSelfie(id, file);
+      setIceBath(updated);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Selfien lataus epäonnistui';
+      setError(errorMessage);
+    } finally {
+      setUploadingSelfie(false);
+      event.target.value = '';
+    }
+  };
+
+  const handleSelfieDelete = async () => {
+    if (!id || !window.confirm('Poistetaanko selfie?')) {
+      return;
+    }
+
+    setUploadingSelfie(true);
+    try {
+      const updated = await avantoAPI.deleteSelfie(id);
+      setIceBath(updated);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Selfien poisto epäonnistui';
+      setError(errorMessage);
+    } finally {
+      setUploadingSelfie(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!id || !window.confirm('Poistetaanko tämä avanto?')) {
@@ -117,6 +154,24 @@ const IceBathDetail: React.FC = () => {
               <div className="info-section">
                 <h3>{iceBath.location}</h3>
                 <p>{formatDate(iceBath.date)}</p>
+              </div>
+
+              <div className="selfie-section">
+                <h4>Selfie</h4>
+                {iceBath.selfie_url ? (
+                  <div className="selfie-preview">
+                    <img src={iceBath.selfie_url} alt="Avanto selfie" />
+                    <button type="button" className="btn-secondary detail-btn" onClick={handleSelfieDelete} disabled={uploadingSelfie}>
+                      Poista selfie
+                    </button>
+                  </div>
+                ) : (
+                  <p>Ei selfietä vielä.</p>
+                )}
+                <label className="selfie-upload">
+                  {uploadingSelfie ? 'Ladataan...' : 'Lataa selfie'}
+                  <input type="file" accept="image/*" onChange={handleSelfieUpload} disabled={uploadingSelfie} />
+                </label>
               </div>
   
               <div className="stats-grid">

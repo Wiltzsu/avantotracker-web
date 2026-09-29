@@ -11,6 +11,7 @@ import {
   maxCount,
   STATS_RANGE_OPTIONS,
 } from '../utils/statsFormatters';
+import MoodChart from './MoodChart';
 import './Stats.css';
 
 const Stats: React.FC = () => {
@@ -166,6 +167,13 @@ const Stats: React.FC = () => {
                   </div>
                 </div>
               </section>
+
+              {stats.mood_timeline.length > 0 && (
+                <section className="chart-section">
+                  <h2>Fiilis ajan yli</h2>
+                  <MoodChart timeline={stats.mood_timeline} />
+                </section>
+              )}
 
               {stats.visits_by_month.length > 0 && (
                 <section className="chart-section">

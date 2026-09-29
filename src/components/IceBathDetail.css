@@ -296,3 +296,29 @@
     padding: 1rem;
   }
 }
+
+.selfie-section {
+  margin-top: 1.5rem;
+}
+
+.selfie-preview img {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.selfie-upload input {
+  display: none;
+}
+
+.selfie-upload {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  background: #334155;
+  color: #fff;
+  cursor: pointer;
+}

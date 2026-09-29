@@ -85,6 +85,15 @@ const Dashboard = () => {
                 </div>
                 <div className="action-arrow">→</div>
               </Link>
+
+              <Link to="/records" className="action-card secondary">
+                <div className="action-icon">🏆</div>
+                <div className="action-content">
+                  <h3>Ennätykset</h3>
+                  <p>Henkilökohtaiset huiput</p>
+                </div>
+                <div className="action-arrow">→</div>
+              </Link>
             </div>
           </section>
 

@@ -20,8 +20,11 @@ const NewIceBath: React.FC = () => {
         submitLabel="Lisää avanto"
         submittingLabel="Lisätään..."
         cancelTo="/dashboard"
-        onSubmit={async (payload) => {
-          await avantoAPI.create(payload);
+        onSubmit={async (payload, selfie) => {
+          const avanto = await avantoAPI.create(payload);
+          if (selfie) {
+            await avantoAPI.uploadSelfie(avanto.avanto_id, selfie);
+          }
           navigate('/dashboard');
         }}
       />

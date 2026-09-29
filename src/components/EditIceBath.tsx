@@ -71,8 +71,11 @@ const EditIceBath: React.FC = () => {
         submitLabel="Tallenna muutokset"
         submittingLabel="Tallennetaan..."
         cancelTo={`/avanto/${id}`}
-        onSubmit={async (payload) => {
+        onSubmit={async (payload, selfie) => {
           await avantoAPI.update(id, payload);
+          if (selfie) {
+            await avantoAPI.uploadSelfie(id, selfie);
+          }
           navigate(`/avanto/${id}`);
         }}
       />

@@ -1,97 +1,80 @@
 import { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import Header from './Header.js';
 import Footer from './Footer.js';
-import { avantoAPI } from '../services/api';
+import { avantoAPI, AvantoResponse, HistoryFilters } from '../services/api';
+import { getApiErrorMessage } from '../utils/apiErrors';
 import './History.css';
 import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters';
 
-// Define the type for ice bath data
-interface IceBath {
-  avanto_id: string | number;
-  user_id: string | number;
-  date: string;
-  location: string;
-  water_temperature: number | null;
-  air_temperature?: number | null;
-  duration_minutes?: number;
-  duration_seconds?: number;
-  notes?: string;
-}
+const emptyFilters = (): HistoryFilters => ({
+  location: '',
+  start_date: '',
+  end_date: '',
+  sauna: undefined,
+});
 
 const History: React.FC = () => {
-  const [iceBaths, setIceBaths] = useState<IceBath[]>([]);
+  const [iceBaths, setIceBaths] = useState<AvantoResponse[]>([]);
+  const [filters, setFilters] = useState<HistoryFilters>(emptyFilters());
+  const [appliedFilters, setAppliedFilters] = useState<HistoryFilters>(emptyFilters());
   const [loading, setLoading] = useState<boolean>(true);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const perPage = 10;
 
   useEffect(() => {
-    // Load ice bath history for current page
     const fetchIceBaths = async () => {
       try {
-        setLoading(true); // Show loading spinner
-        const response = await avantoAPI.getAll(currentPage, perPage);
-
+        setLoading(true);
+        const response = await avantoAPI.getAll(currentPage, perPage, appliedFilters);
         setIceBaths(response.data ?? []);
         setTotalPages(response.meta?.last_page ?? 1);
-
+        setError(null);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-        setError(errorMessage);
-        setIceBaths([]); // Reset to empty array on error
+        setError(getApiErrorMessage(err, 'Historian lataus epäonnistui.'));
+        setIceBaths([]);
       } finally {
-        setLoading(false); // Hide loading spinner
+        setLoading(false);
       }
     };
 
     fetchIceBaths();
-  }, [currentPage]); // Re-fetch when page changes
+  }, [currentPage, appliedFilters]);
 
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
-  }
-
-  const goPrev = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFilters((current) => ({
+      ...current,
+      [name]: name === 'sauna' ? (value === '' ? undefined : value === '1') : value,
+    }));
   };
 
-  const goNext = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+  const applyFilters = (event: React.FormEvent) => {
+    event.preventDefault();
+    setCurrentPage(1);
+    setAppliedFilters(filters);
   };
 
-  if (loading) {
-    return (
-      <>
-        <Header />
-        <div className="history-container">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Ladataan avantohistoriaa...</p>
-          </div>
-        </div>
-      </>
-    );
-  }
+  const resetFilters = () => {
+    const cleared = emptyFilters();
+    setFilters(cleared);
+    setAppliedFilters(cleared);
+    setCurrentPage(1);
+  };
 
-  if (error) {
-    return (
-      <>
-        <Header />
-        <div className="history-container">
-          <div className="error-message">
-            <h2>Virhe sivulla</h2>
-            <p>{error}</p>
-          </div>
-        </div>
-      </>
-    );
-  }
+  const handleExport = async () => {
+    try {
+      setExporting(true);
+      await avantoAPI.exportCsv(appliedFilters);
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'CSV-vienti epäonnistui.'));
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <>
@@ -103,39 +86,83 @@ const History: React.FC = () => {
             <p>Kaikki avantosi yhdessä paikassa</p>
           </div>
 
-          <div className="history-list">
-            <div className="history-header-row">
-              <div className="item-main">
-                <div className="location-date header-cell">Sijainti ja päivämäärä</div>
-                <div className="duration header-cell">Aika</div>
-                <div className="temperature header-cell">Veden lämpötila</div>
-              </div>
+          <form className="history-filters" onSubmit={applyFilters}>
+            <input
+              type="text"
+              name="location"
+              value={filters.location ?? ''}
+              onChange={handleFilterChange}
+              placeholder="Hae sijaintia"
+            />
+            <input
+              type="date"
+              name="start_date"
+              value={filters.start_date ?? ''}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="date"
+              name="end_date"
+              value={filters.end_date ?? ''}
+              onChange={handleFilterChange}
+            />
+            <select name="sauna" value={filters.sauna === undefined ? '' : filters.sauna ? '1' : '0'} onChange={handleFilterChange}>
+              <option value="">Kaikki saunat</option>
+              <option value="1">Saunan kanssa</option>
+              <option value="0">Ilman saunaa</option>
+            </select>
+            <button type="submit" className="filter-btn">Suodata</button>
+            <button type="button" className="filter-btn secondary" onClick={resetFilters}>Tyhjennä</button>
+            <button type="button" className="filter-btn secondary" onClick={handleExport} disabled={exporting}>
+              {exporting ? 'Viedään...' : 'Vie CSV'}
+            </button>
+          </form>
+
+          {loading ? (
+            <div className="loading-spinner">
+              <div className="spinner"></div>
+              <p>Ladataan avantohistoriaa...</p>
             </div>
-
-            {iceBaths.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-icon">🧊</div>
-                <h3>Ei vielä avantoja</h3>
-                <p>Aloita ensimmäinen avanto-kokemuksesi!</p>
+          ) : error ? (
+            <div className="error-message">
+              <h2>Virhe sivulla</h2>
+              <p>{error}</p>
+            </div>
+          ) : (
+            <div className="history-list">
+              <div className="history-header-row">
+                <div className="item-main">
+                  <div className="location-date header-cell">Sijainti ja päivämäärä</div>
+                  <div className="duration header-cell">Aika</div>
+                  <div className="temperature header-cell">Veden lämpötila</div>
+                </div>
               </div>
-            ) : (
-              iceBaths.map((iceBath) => {
-                const formattedDate = formatDate(iceBath.date);
 
-                return (
-                  <Link key={iceBath.avanto_id} to={`/avanto/${iceBath.avanto_id}`} style={{ textDecoration: 'none' }}>  
-                    <div key={iceBath.avanto_id} className="history-item">
+              {iceBaths.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-icon">🧊</div>
+                  <h3>Ei tuloksia</h3>
+                  <p>Kokeile toista suodatinta tai lisää uusi avanto.</p>
+                </div>
+              ) : (
+                iceBaths.map((iceBath) => (
+                  <Link
+                    key={iceBath.avanto_id}
+                    to={`/avanto/${iceBath.avanto_id}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <div className="history-item">
                       <div className="item-main">
                         <div className="location-date">
                           <span className="location">{iceBath.location}</span>
-                          <span className="date">{formattedDate}</span>
+                          <span className="date">{formatDate(iceBath.date)}</span>
                         </div>
                         <div className="duration">
                           {formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}
                         </div>
                         <div className="temperature">
                           {iceBath.water_temperature !== null && (
-                            <span 
+                            <span
                               className="temp-badge"
                               style={{ backgroundColor: getTemperatureColor(iceBath.water_temperature ?? 0) }}
                             >
@@ -146,51 +173,49 @@ const History: React.FC = () => {
                       </div>
                     </div>
                   </Link>
-                );
-              })
-            )}
+                ))
+              )}
 
-            {/* Pagination controls */}
-            {totalPages > 1 && (
-              <div className="pagination-bar">
-                <button
-                  className="page-btn"
-                  onClick={goPrev}
-                  disabled={currentPage <= 1}
-                >
-                  Edellinen
-                </button>
-                <button
-                  className="page-btn"
-                  onClick={goNext}
-                  disabled={currentPage >= totalPages}
-                >
-                  Seuraava
-                </button>
-              </div>
-            )}
+              {totalPages > 1 && (
+                <>
+                  <div className="pagination-bar">
+                    <button
+                      className="page-btn"
+                      onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                      disabled={currentPage <= 1}
+                    >
+                      Edellinen
+                    </button>
+                    <button
+                      className="page-btn"
+                      onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                      disabled={currentPage >= totalPages}
+                    >
+                      Seuraava
+                    </button>
+                  </div>
 
-          {/* Page numbers for small page counts */}
-          {totalPages <= 7 && totalPages > 1 && (
-              <div className="page-numbers">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    className={`page-num ${page === currentPage ? 'active' : ''}`}
-                    onClick={() => goToPage(page)}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+                  {totalPages <= 7 && (
+                    <div className="page-numbers">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                          key={page}
+                          className={`page-num ${page === currentPage ? 'active' : ''}`}
+                          onClick={() => setCurrentPage(page)}
+                        >
+                          {page}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
-
       <Footer />
     </>
-
   );
 };
 
