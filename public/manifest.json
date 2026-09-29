@@ -1,15 +1,18 @@
 {
-  "short_name": "AvantoTracker",
-  "name": "AvantoTracker - Ice Bath Tracking",
+  "name": "AvantoTracker",
+  "short_name": "Avanto",
+  "description": "Track ice baths and cold water therapy sessions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#667eea",
+  "lang": "en",
+  "scope": "/",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
-  ],
-  "start_url": ".",
-  "display": "browser",
-  "theme_color": "#667eea",
-  "background_color": "#0f172a"
+  ]
 }
