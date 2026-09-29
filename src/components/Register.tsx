@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import './Register.css'; // Reusing the same styles
+import {
+  isStrongPassword,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REQUIREMENTS_MESSAGE,
+} from '../utils/passwordRules';
+import './Register.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -34,8 +39,8 @@ const Register = () => {
       setPasswordError('Passwords do not match');
       return false;
     }
-    if (formData.password.length < 6) {
-      setPasswordError('Password must be at least 6 characters long');
+    if (!isStrongPassword(formData.password)) {
+      setPasswordError(PASSWORD_REQUIREMENTS_MESSAGE);
       return false;
     }
     return true;
@@ -130,7 +135,7 @@ const Register = () => {
                 placeholder="Syötä salasana"
                 required
                 disabled={loading}
-                minLength={6}
+                minLength={PASSWORD_MIN_LENGTH}
               />
               <button
                 type="button"
@@ -156,7 +161,7 @@ const Register = () => {
                 placeholder="Syötä salasana uusiksi"
                 required
                 disabled={loading}
-                minLength={6}
+                minLength={PASSWORD_MIN_LENGTH}
               />
               <button
                 type="button"

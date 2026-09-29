@@ -112,8 +112,12 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
+const SENSITIVE_AUTH_PATHS = ['/api/login', '/api/register'];
+
+const isSensitiveAuthRequest = (url?: string): boolean =>
+  SENSITIVE_AUTH_PATHS.some((path) => url?.includes(path));
+
 // Request interceptor: attach Bearer token (if present) to every request.
-// Token is stored in localStorage by AuthContext after login
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('auth_token');
@@ -121,9 +125,9 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Log requests in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`🔵 ${config.method?.toUpperCase()} ${config.url}`, config.data);
+    if (import.meta.env.DEV) {
+      const payload = isSensitiveAuthRequest(config.url) ? '[redacted]' : config.data;
+      console.log(`🔵 ${config.method?.toUpperCase()} ${config.url}`, payload);
     }
 
     return config;
@@ -139,16 +143,16 @@ apiClient.interceptors.request.use(
 // Response interceptor - handle auth errors
 apiClient.interceptors.response.use(
   (response) => {
-    // Log responses in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`🟢 ${response.config.method?.toUpperCase()} ${response.config.url}`, response.data);
+    if (import.meta.env.DEV) {
+      const payload = isSensitiveAuthRequest(response.config.url) ? '[redacted]' : response.data;
+      console.log(`🟢 ${response.config.method?.toUpperCase()} ${response.config.url}`, payload);
     }
     return response;
   },
   (error) => {
-    // Log errors in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error(`🔴 ${error.config?.method?.toUpperCase()} ${error.config?.url}`, error.response?.data);
+    if (import.meta.env.DEV) {
+      const payload = isSensitiveAuthRequest(error.config?.url) ? '[redacted]' : error.response?.data;
+      console.error(`🔴 ${error.config?.method?.toUpperCase()} ${error.config?.url}`, payload);
     }
 
     // Handle unauthorized errors

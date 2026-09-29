@@ -1,10 +1,52 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
-import { setAuthToken, clearAuth, getUserData, setUserData, isAuthenticated } from '../utils/auth';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authAPI, setAuthErrorHandler } from '../services/api';
+import {
+  setAuthToken,
+  clearAuth,
+  setUserData,
+  hasStoredSession,
+  User,
+} from '../utils/auth';
+import { getApiErrorMessage } from '../utils/apiErrors';
 
-const AuthContext = createContext();
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
-export const useAuth = () => {
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface AuthResult {
+  success: boolean;
+  user?: User;
+  error?: string;
+}
+
+interface AuthContextValue {
+  user: User | null;
+  login: (credentials: LoginCredentials) => Promise<AuthResult>;
+  register: (userData: RegisterData) => Promise<AuthResult>;
+  logout: () => Promise<void>;
+  loading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export const useAuth = (): AuthContextValue => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
@@ -12,54 +54,78 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSessionExpired = useCallback(() => {
+    clearAuth();
+    setUser(null);
+    navigate('/login', { replace: true });
+  }, [navigate]);
 
   useEffect(() => {
-    // Check if user is already authenticated
-    if (isAuthenticated()) {
-      const userData = getUserData();
-      setUser(userData);
-      setAuthToken(localStorage.getItem('auth_token'));
-    }
-    setLoading(false);
-  }, []);
+    setAuthErrorHandler(handleSessionExpired);
+  }, [handleSessionExpired]);
 
-  const login = async (credentials) => {
-    try {
-      // Set loading state to true - this shows the spinner/loading UI
-      setLoading(true);
+  useEffect(() => {
+    let cancelled = false;
 
-      // Clear any previous error messages
-      setError(null);
-      
-      // Send login request to the API with user credentials (api.ts)
-      // credentials = { email: "john@example.com", password: "password123" }
-      const response = await authAPI.login(credentials);
+    const restoreSession = async () => {
+      if (!hasStoredSession()) {
+        setLoading(false);
+        return;
+      }
 
-      // Extract user data and token from API response
-      // response.data = { user: {...}, token: "abc123", message: "Login successful" }
-      const { user: userData, token } = response;
-      
-      // Save the authentication token to localStorage and axios headers
-      // This allows future API requests to include the token
+      const token = localStorage.getItem('auth_token');
       setAuthToken(token);
 
-      // Save user data to localStorage for persistence
-      // User stays logged in even if they refresh the page
-      setUserData(userData);
+      try {
+        const userData = await authAPI.me();
+        if (!cancelled) {
+          setUserData(userData);
+          setUser(userData);
+        }
+      } catch {
+        if (!cancelled) {
+          clearAuth();
+          setUser(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
 
-      // Update the user state in React context
-      // This triggers re-render of components that use useAuth()
+    restoreSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const login = async (credentials: LoginCredentials): Promise<AuthResult> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await authAPI.login(credentials);
+      const { user: userData, token } = response;
+
+      setAuthToken(token);
+      setUserData(userData);
       setUser(userData);
-      
-      // Return success result to Login component
-      // Login component uses this to decide whether to redirect
+
       return { success: true, user: userData };
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
+      const errorMessage = getApiErrorMessage(err, 'Login failed. Please try again.');
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
@@ -67,21 +133,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (userData) => {
+  const register = async (userData: RegisterData): Promise<AuthResult> => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await authAPI.register(userData);
       const { user: newUser, token } = response;
-      
+
       setAuthToken(token);
       setUserData(newUser);
       setUser(newUser);
-      
+
       return { success: true, user: newUser };
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
+      const errorMessage = getApiErrorMessage(err, 'Registration failed. Please try again.');
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
@@ -89,7 +155,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
       await authAPI.logout();
     } catch (err) {
@@ -100,19 +166,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const value = {
+  const value: AuthContextValue = {
     user,
     login,
     register,
     logout,
     loading,
     error,
-    isAuthenticated: !!user
+    isAuthenticated: Boolean(user),
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

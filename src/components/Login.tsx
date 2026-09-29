@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Footer from './Footer.js';
 import './Login.css';
 
@@ -19,6 +19,8 @@ const Login = () => {
 
   // Get navigation function from React Router
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/dashboard';
 
   // Handle input field changes when user types
   const handleChange = (e) => {
@@ -33,7 +35,7 @@ const Login = () => {
     e.preventDefault();                   // Prevent page refresh
     const result = await login(formData); // Call login function with form data (AuthContext.js)
     if (result.success) {                 
-      navigate('/dashboard');             // Redirect to dashboard page
+      navigate(redirectTo, { replace: true });
     }
   };
 
@@ -120,6 +122,15 @@ const Login = () => {
                 )}
               </button>
             </form>
+
+            <div className="register-footer">
+              <p>
+                Ei käyttäjää?{' '}
+                <Link to="/register" className="register-link">
+                  Luo tili
+                </Link>
+              </p>
+            </div>
 
             {/* Quick feature list below login - optional */}
             {/* Feature cards below login */}
