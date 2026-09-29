@@ -34,23 +34,45 @@ jobs:
         VITE_API_URL: ${{ secrets.REACT_APP_API_URL }}
       run: npm run build
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.1
-      with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
-
     - name: Deploy to server
       env:
-        DEPLOY_HOST: ${{ secrets.HOST }}
-        DEPLOY_USER: ${{ secrets.USER }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+        HOST: ${{ secrets.HOST }}
+        USER: ${{ secrets.USER }}
       run: |
         set -euo pipefail
 
+        if [[ -z "${SSH_KEY//[[:space:]]/}" ]]; then
+          echo "Error: SSH_KEY secret is empty."
+          exit 1
+        fi
+
         mkdir -p ~/.ssh
-        ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+        printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
 
-        REMOTE="${DEPLOY_USER}@${DEPLOY_HOST}"
+        if ! ssh-keygen -y -f ~/.ssh/deploy_key >/dev/null 2>&1; then
+          echo "Error: SSH_KEY is not a valid unencrypted private key."
+          exit 1
+        fi
+
+        ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+        REMOTE="${USER}@${HOST}"
         REMOTE_DIR="/var/www/avantotracker-web/build"
+        SSH_OPTS=(-i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=30)
 
-        ssh -o StrictHostKeyChecking=no "$REMOTE" "mkdir -p ${REMOTE_DIR} && rm -rf ${REMOTE_DIR}/*"
-        scp -o StrictHostKeyChecking=no -r build/* "${REMOTE}:${REMOTE_DIR}/"
+        echo "Testing SSH connection to ${REMOTE}..."
+        ssh "${SSH_OPTS[@]}" "$REMOTE" "echo 'SSH OK'"
+
+        echo "Preparing deploy directory permissions..."
+        ssh "${SSH_OPTS[@]}" "$REMOTE" bash -s <<EOF
+          set -euo pipefail
+          mkdir -p '${REMOTE_DIR}'
+          sudo -n chown -R "\$(whoami):www-data" /var/www/avantotracker-web
+          sudo -n chmod -R g+w /var/www/avantotracker-web
+          rm -rf '${REMOTE_DIR:?}'/*
+        EOF
+
+        echo "Uploading build files..."
+        scp "${SSH_OPTS[@]}" -r build/* "${REMOTE}:${REMOTE_DIR}/"
