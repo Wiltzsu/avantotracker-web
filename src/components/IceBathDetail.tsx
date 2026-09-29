@@ -97,37 +97,38 @@ const IceBathDetail: React.FC = () => {
   
   if (loading) {
     return (
-      <>
+      <div className="page-shell detail-page">
         <Header />
-        <div className="icebath-container">
+        <main className="page-main">
           <div className="loading-spinner">
             <div className="spinner"></div>
-            <p>Ladataan avantohistoriaa...</p>
+            <p>Ladataan avantoa...</p>
           </div>
-        </div>
-      </>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <>
+      <div className="page-shell detail-page">
         <Header />
-        <div className="icebath-container">
+        <main className="page-main">
           <div className="error-message">
             <h2>Virhe sivulla</h2>
             <p>{error}</p>
           </div>
-        </div>
-      </>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="page-shell detail-page">
       <Header />
-      <div className="icebath-container">
-        <div className="avanto-detail-card">
+      <main className="page-main avanto-detail-card">
           <div className="detail-header">
             <h2>Avantotiedot</h2>
             {id && (
@@ -236,10 +237,9 @@ const IceBathDetail: React.FC = () => {
               )}
             </div>
           )}
-        </div>
-      </div>
+      </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

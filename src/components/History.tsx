@@ -77,14 +77,15 @@ const History: React.FC = () => {
   };
 
   return (
-    <>
+    <div className="page-shell history-page">
       <Header />
-      <div className="history-container">
-        <div className="history-wrapper">
-          <div className="history-header">
-            <h1>Avantohistoria</h1>
-            <p>Kaikki avantosi yhdessä paikassa</p>
-          </div>
+
+      <section className="page-hero">
+        <h1>Avantohistoria</h1>
+        <p>Kaikki avantosi yhdessä paikassa</p>
+      </section>
+
+      <main className="page-main history-wrapper">
 
           <form className="history-filters" onSubmit={applyFilters}>
             <input
@@ -212,10 +213,10 @@ const History: React.FC = () => {
               )}
             </div>
           )}
-        </div>
-      </div>
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 };
 

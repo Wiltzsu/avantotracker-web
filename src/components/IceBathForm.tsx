@@ -51,11 +51,13 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
   };
 
   return (
-    <div className="form-wrapper">
-      <div className="form-header">
-        <h1>{title}</h1>
-        <p>{subtitle}</p>
-      </div>
+    <>
+      {title && (
+        <div className="form-header">
+          <h1>{title}</h1>
+          {subtitle && <p>{subtitle}</p>}
+        </div>
+      )}
 
       {error && (
         <div className="form-error" role="alert">
@@ -245,7 +247,7 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
           </button>
         </div>
       </form>
-    </div>
+    </>
   );
 };
 

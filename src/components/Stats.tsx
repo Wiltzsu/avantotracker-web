@@ -45,20 +45,15 @@ const Stats: React.FC = () => {
     : 0;
 
   return (
-    <>
-      <div className="stats-header">
-        <Header />
-      </div>
+    <div className="page-shell stats-page">
+      <Header />
 
-      <div className="stats-page-container">
-        <section className="stats-hero">
-          <div className="stats-hero-content">
-            <h1>📊 Tilastot</h1>
-            <p>Seuraa avantokäyntejä, lämpötiloja, putkia ja saavutuksia.</p>
-          </div>
-        </section>
+      <section className="page-hero">
+        <h1>Tilastot</h1>
+        <p>Seuraa avantokäyntejä, lämpötiloja, putkia ja saavutuksia.</p>
+      </section>
 
-        <div className="stats-main">
+      <main className="page-main">
           <section className="stats-range-section">
             <div className="stats-range-pills">
               {STATS_RANGE_OPTIONS.map((option) => (
@@ -74,8 +69,8 @@ const Stats: React.FC = () => {
             </div>
           </section>
 
-          {loading && <div className="stats-state">Ladataan tilastoja...</div>}
-          {error && <div className="stats-error">{error}</div>}
+          {loading && <div className="state-banner">Ladataan tilastoja...</div>}
+          {error && <div className="error-banner">{error}</div>}
 
           {!loading && !error && stats && (
             <>
@@ -117,7 +112,7 @@ const Stats: React.FC = () => {
               </section>
 
               <section className="detailed-stats-section">
-                <h2>Yksityiskohtaiset tilastot</h2>
+                <h2 className="section-title">Yksityiskohtaiset tilastot</h2>
                 <div className="stats-grid">
                   <div className="stat-card">
                     <div className="stat-icon">🌡️</div>
@@ -170,14 +165,14 @@ const Stats: React.FC = () => {
 
               {stats.mood_timeline.length > 0 && (
                 <section className="chart-section">
-                  <h2>Fiilis ajan yli</h2>
+                  <h2 className="section-title">Fiilis ajan yli</h2>
                   <MoodChart timeline={stats.mood_timeline} />
                 </section>
               )}
 
               {stats.visits_by_month.length > 0 && (
                 <section className="chart-section">
-                  <h2>Käynnit kuukausittain</h2>
+                  <h2 className="section-title">Käynnit kuukausittain</h2>
                   <div className="bar-chart">
                     {stats.visits_by_month.map((item) => (
                       <div key={item.month} className="bar-chart-item">
@@ -197,7 +192,7 @@ const Stats: React.FC = () => {
               <section className="split-section">
                 {stats.location_breakdown.length > 0 && (
                   <div className="split-card">
-                    <h2>Paikat</h2>
+                    <h2 className="section-title">Paikat</h2>
                     <ul className="breakdown-list">
                       {stats.location_breakdown.map((item) => (
                         <li key={item.location}>
@@ -218,7 +213,7 @@ const Stats: React.FC = () => {
                 )}
 
                 <div className="split-card">
-                  <h2>Sauna vs ei saunaa</h2>
+                  <h2 className="section-title">Sauna vs ei saunaa</h2>
                   <div className="sauna-split">
                     <div className="sauna-split-row">
                       <span>Saunan kanssa</span>
@@ -238,7 +233,7 @@ const Stats: React.FC = () => {
               </section>
 
               <section className="achievements-section">
-                <h2>Saavutukset 🏆</h2>
+                <h2 className="section-title">Saavutukset</h2>
                 <div className="achievements-grid">
                   {stats.achievements.map((achievement) => (
                     <div
@@ -264,11 +259,10 @@ const Stats: React.FC = () => {
               </section>
             </>
           )}
-        </div>
-      </div>
+      </main>
 
       <Footer />
-    </>
+    </div>
   );
 };
 

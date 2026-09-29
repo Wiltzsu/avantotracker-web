@@ -5,18 +5,27 @@ import Footer from './Footer.js';
 import IceBathForm from './IceBathForm';
 import { avantoAPI } from '../services/api.ts';
 import { emptyAvantoFormData } from '../utils/avantoForm';
+import iceLake from '../ice-lake.jpg';
 import './NewIceBath.css';
 
 const NewIceBath: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="avanto-container">
+    <div className="page-shell form-page">
       <Header />
+      <section
+        className="page-hero"
+        style={{ ['--hero-image' as string]: `url(${iceLake})` }}
+      >
+        <h1>Uusi avanto</h1>
+        <p>Kirjaa uinti, lämpö ja fiilikset.</p>
+      </section>
+      <main className="page-main">
       <IceBathForm
         initialData={emptyAvantoFormData()}
-        title="Uusi avanto"
-        subtitle="Täytä tiedot uudesta avantokäynnistä"
+        title=""
+        subtitle=""
         submitLabel="Lisää avanto"
         submittingLabel="Lisätään..."
         cancelTo="/dashboard"
@@ -28,6 +37,7 @@ const NewIceBath: React.FC = () => {
           navigate('/dashboard');
         }}
       />
+      </main>
       <Footer />
     </div>
   );

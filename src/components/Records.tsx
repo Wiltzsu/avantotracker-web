@@ -30,16 +30,17 @@ const Records: React.FC = () => {
   }, []);
 
   return (
-    <>
+    <div className="page-shell records-page">
       <Header />
-      <div className="records-page">
-        <section className="records-hero">
-          <h1>🏆 Ennätykset</h1>
-          <p>Henkilökohtaiset huiput kylmästä vedestä, kestosta ja fiiliksestä.</p>
-        </section>
 
-        {loading && <div className="records-state">Ladataan ennätyksiä...</div>}
-        {error && <div className="records-error">{error}</div>}
+      <section className="page-hero">
+        <h1>Ennätykset</h1>
+        <p>Henkilökohtaiset huiput kylmästä vedestä, kestosta ja fiiliksestä.</p>
+      </section>
+
+      <main className="page-main">
+        {loading && <div className="state-banner">Ladataan ennätyksiä...</div>}
+        {error && <div className="error-banner">{error}</div>}
 
         {!loading && !error && records && (
           <div className="records-grid">
@@ -73,9 +74,10 @@ const Records: React.FC = () => {
             />
           </div>
         )}
-      </div>
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 };
 
@@ -87,7 +89,7 @@ interface RecordCardProps {
 }
 
 const RecordCard: React.FC<RecordCardProps> = ({ icon, title, value, record }) => (
-  <div className="record-card">
+  <div className="record-card glass-card">
     <div className="record-icon">{icon}</div>
     <h2>{title}</h2>
     <div className="record-value">{value}</div>

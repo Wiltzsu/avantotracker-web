@@ -5,6 +5,7 @@ import Footer from './Footer.js';
 import IceBathForm from './IceBathForm';
 import { avantoAPI } from '../services/api';
 import { avantoToFormData, emptyAvantoFormData } from '../utils/avantoForm';
+import iceLake from '../ice-lake.jpg';
 import './NewIceBath.css';
 
 const EditIceBath: React.FC = () => {
@@ -38,11 +39,11 @@ const EditIceBath: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="avanto-container">
+      <div className="page-shell form-page">
         <Header />
-        <div className="form-wrapper">
-          <p>Ladataan avantoa...</p>
-        </div>
+        <main className="page-main">
+          <div className="state-banner">Ladataan avantoa...</div>
+        </main>
         <Footer />
       </div>
     );
@@ -50,35 +51,44 @@ const EditIceBath: React.FC = () => {
 
   if (error || !id) {
     return (
-      <div className="avanto-container">
+      <div className="page-shell form-page">
         <Header />
-        <div className="form-wrapper">
-          <div className="form-error">{error ?? 'Avantoa ei löytynyt'}</div>
-        </div>
+        <main className="page-main">
+          <div className="error-banner">{error ?? 'Avantoa ei löytynyt'}</div>
+        </main>
         <Footer />
       </div>
     );
   }
 
   return (
-    <div className="avanto-container">
+    <div className="page-shell form-page">
       <Header />
-      <IceBathForm
-        key={id}
-        initialData={initialData}
-        title="Muokkaa avantoa"
-        subtitle="Päivitä avantokäynnin tiedot"
-        submitLabel="Tallenna muutokset"
-        submittingLabel="Tallennetaan..."
-        cancelTo={`/avanto/${id}`}
-        onSubmit={async (payload, selfie) => {
-          await avantoAPI.update(id, payload);
-          if (selfie) {
-            await avantoAPI.uploadSelfie(id, selfie);
-          }
-          navigate(`/avanto/${id}`);
-        }}
-      />
+      <section
+        className="page-hero"
+        style={{ ['--hero-image' as string]: `url(${iceLake})` }}
+      >
+        <h1>Muokkaa avantoa</h1>
+        <p>Päivitä avantokäynnin tiedot.</p>
+      </section>
+      <main className="page-main">
+        <IceBathForm
+          key={id}
+          initialData={initialData}
+          title=""
+          subtitle=""
+          submitLabel="Tallenna muutokset"
+          submittingLabel="Tallennetaan..."
+          cancelTo={`/avanto/${id}`}
+          onSubmit={async (payload, selfie) => {
+            await avantoAPI.update(id, payload);
+            if (selfie) {
+              await avantoAPI.uploadSelfie(id, selfie);
+            }
+            navigate(`/avanto/${id}`);
+          }}
+        />
+      </main>
       <Footer />
     </div>
   );
