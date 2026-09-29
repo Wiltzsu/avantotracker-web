@@ -86,6 +86,22 @@ textarea {
   font: inherit;
 }
 
+input[type='date'],
+select {
+  color-scheme: dark;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.88) sepia(0.15) saturate(4) hue-rotate(165deg);
+  cursor: pointer;
+  opacity: 0.95;
+}
+
+select option {
+  background-color: var(--color-surface-solid);
+  color: var(--color-text);
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

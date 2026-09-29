@@ -8,6 +8,7 @@
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 0.65rem;
   margin-bottom: 1.35rem;
+  color-scheme: dark;
 }
 
 .history-filters input,
@@ -15,8 +16,36 @@
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.04);
+  background-color: var(--color-surface-solid);
   color: var(--color-text);
+}
+
+.history-filters select {
+  appearance: none;
+  padding-right: 2.1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238fa3c0' d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  cursor: pointer;
+}
+
+.history-filters select option {
+  background-color: var(--color-surface-solid);
+  color: var(--color-text);
+}
+
+.history-filters input[type='date'] {
+  min-height: 2.65rem;
+}
+
+.history-filters input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.88) sepia(0.15) saturate(4) hue-rotate(165deg);
+  cursor: pointer;
+  opacity: 0.95;
+}
+
+.history-filters input[type='date']::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 .history-filters input:focus,
