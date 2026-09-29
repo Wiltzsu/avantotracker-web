@@ -1,45 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from './Header.js';
 import Footer from './Footer.js';
-import { avantoAPI, AvantoStats } from '../services/api';
+import { avantoAPI, AvantoStats, StatsRange } from '../services/api';
+import { getApiErrorMessage } from '../utils/apiErrors';
+import {
+  formatMonthLabel,
+  formatMoodDelta,
+  formatSecondsAsDuration,
+  formatTemperature,
+  maxCount,
+  STATS_RANGE_OPTIONS,
+} from '../utils/statsFormatters';
 import './Stats.css';
 
 const Stats: React.FC = () => {
-  // Create state to hold stats (starts as null)
   const [stats, setStats] = useState<AvantoStats | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [range, setRange] = useState<StatsRange>('all');
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Call the API - gets back clean data
-        const data = await avantoAPI.stats();
-
-        // Store it in state
+        setLoading(true);
+        setError(null);
+        const data = await avantoAPI.stats(range);
         setStats(data);
       } catch (err) {
-        // Handle errors
-        const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-        setError(errorMessage);
+        setError(getApiErrorMessage(err, 'Tilastojen lataus epäonnistui.'));
         setStats(null);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    fetchStats(); // Run once when component mounts
-  }, []); // Empty array = only run once
+    fetchStats();
+  }, [range]);
 
-  // Dummy data for now
-  // const dummyStats = {
-  //   total_visits: 47,
-  //   total_duration: 6466,
-  //   avg_temperature: -2.1,
-  //   coldest_swim: -5.8,
-  //   longest_swim: 8.5,
-  //   this_month: 12,
-  //   this_week: 3,
-  //   total_sauna_sessions: 38
-  // };
+  const monthPeak = stats ? maxCount(stats.visits_by_month) : 0;
+  const locationPeak = stats ? maxCount(stats.location_breakdown) : 0;
+  const saunaTotal = stats
+    ? stats.sauna_breakdown.with_sauna + stats.sauna_breakdown.without_sauna
+    : 0;
 
   return (
     <>
@@ -48,135 +50,212 @@ const Stats: React.FC = () => {
       </div>
 
       <div className="stats-page-container">
-        {/* Hero Section */}
         <section className="stats-hero">
           <div className="stats-hero-content">
             <h1>📊 Tilastot</h1>
+            <p>Seuraa avantokäyntejä, lämpötiloja, putkia ja saavutuksia.</p>
           </div>
         </section>
 
         <div className="stats-main">
-          {/* Primary Stats - Big Cards */}
-          <section className="primary-stats-section">
-            <div className="primary-stats-grid">
-              <div className="primary-stat-card highlight">
-                <div className="primary-stat-icon">🏊</div>
-                <div className="primary-stat-content">
-                  <div className="primary-stat-label">Käynnit yhteensä</div>
-                    {stats ? (
-                      <>
-                        <div className="primary-stat-value">{stats.total_visits}</div>
-                        <div className="primary-stat-subtitle">Mahtavaa työtä!</div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="primary-stat-value">:/</div>
-                        <div className="primary-stat-subitlte">Sinulla ei ole vielä käyntejä</div>
-                      </>
-                    )}
-                </div>
-              </div>
-
-              <div className="primary-stat-card">
-                <div className="primary-stat-icon">⏱️</div>
-                <div className="primary-stat-content">
-                  <div className="primary-stat-label">Avannossa vietetty aika</div>
-                    {stats ? (
-                      <>
-                        <div className="primary-stat-value">{Math.floor(stats.total_duration / 60)} min</div>
-                        <div className="primary-stat-subtitle">{stats.total_duration} sekuntia</div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="primary-stat-value">0 min</div>
-                      </>
-                    )}
-                </div>
-              </div>
+          <section className="stats-range-section">
+            <div className="stats-range-pills">
+              {STATS_RANGE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={`stats-range-pill ${range === option.value ? 'active' : ''}`}
+                  onClick={() => setRange(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
           </section>
 
-          {/* Detailed Stats Grid */}
-          {/* <section className="detailed-stats-section">
-            <h2>Yksityiskohtaiset tilastot</h2>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon">🌡️</div>
-                <div className="stat-label">Keskimääräinen lämpötila</div>
-                <div className="stat-value">{dummyStats.avg_temperature}°C</div>
-                <div className="stat-trend down">Kylmää!</div>
-              </div>
+          {loading && <div className="stats-state">Ladataan tilastoja...</div>}
+          {error && <div className="stats-error">{error}</div>}
 
-              <div className="stat-card">
-                <div className="stat-icon">❄️</div>
-                <div className="stat-label">Kylmin uinti</div>
-                <div className="stat-value">{dummyStats.coldest_swim}°C</div>
-                <div className="stat-trend">Ennätys</div>
-              </div>
+          {!loading && !error && stats && (
+            <>
+              <section className="primary-stats-section">
+                <div className="primary-stats-grid">
+                  <div className="primary-stat-card highlight">
+                    <div className="primary-stat-icon">🏊</div>
+                    <div className="primary-stat-content">
+                      <div className="primary-stat-label">Käynnit</div>
+                      <div className="primary-stat-value">{stats.total_visits}</div>
+                      <div className="primary-stat-subtitle">
+                        {stats.this_week_visits} tällä viikolla · {stats.this_month_visits} tässä kuussa
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">⏰</div>
-                <div className="stat-label">Pisin uinti</div>
-                <div className="stat-value">{dummyStats.longest_swim} min</div>
-                <div className="stat-trend up">Vahva suoritus</div>
-              </div>
+                  <div className="primary-stat-card">
+                    <div className="primary-stat-icon">⏱️</div>
+                    <div className="primary-stat-content">
+                      <div className="primary-stat-label">Avannossa yhteensä</div>
+                      <div className="primary-stat-value">
+                        {formatSecondsAsDuration(stats.total_duration)}
+                      </div>
+                      <div className="primary-stat-subtitle">
+                        Keskimäärin {formatSecondsAsDuration(stats.average_duration)}
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">📅</div>
-                <div className="stat-label">Tämä kuukausi</div>
-                <div className="stat-value">{dummyStats.this_month}</div>
-                <div className="stat-trend up">+3 edellisestä</div>
-              </div>
+                  <div className="primary-stat-card">
+                    <div className="primary-stat-icon">🔥</div>
+                    <div className="primary-stat-content">
+                      <div className="primary-stat-label">Putki</div>
+                      <div className="primary-stat-value">{stats.current_streak_days} pv</div>
+                      <div className="primary-stat-subtitle">Paras putki {stats.best_streak_days} pv</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
 
-              <div className="stat-card">
-                <div className="stat-icon">📆</div>
-                <div className="stat-label">Tämä viikko</div>
-                <div className="stat-value">{dummyStats.this_week}</div>
-                <div className="stat-trend up">Hyvää tahtia</div>
-              </div>
+              <section className="detailed-stats-section">
+                <h2>Yksityiskohtaiset tilastot</h2>
+                <div className="stats-grid">
+                  <div className="stat-card">
+                    <div className="stat-icon">🌡️</div>
+                    <div className="stat-label">Keskilämpötila</div>
+                    <div className="stat-value">{formatTemperature(stats.average_water_temperature)}</div>
+                  </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">🔥</div>
-                <div className="stat-label">Sauna-istunnot</div>
-                <div className="stat-value">{dummyStats.total_sauna_sessions}</div>
-                <div className="stat-trend">Loistavaa!</div>
-              </div>
-            </div>
-          </section> */}
+                  <div className="stat-card">
+                    <div className="stat-icon">❄️</div>
+                    <div className="stat-label">Kylmin uinti</div>
+                    <div className="stat-value">{formatTemperature(stats.coldest_water_temperature)}</div>
+                    <div className="stat-trend down">Henksut pihalle</div>
+                  </div>
 
-          {/* Achievement Cards */}
-          {/* <section className="achievements-section">
-            <h2>Saavutukset 🏆</h2>
-            <div className="achievements-grid">
-              <div className="achievement-card unlocked">
-                <div className="achievement-icon">🥶</div>
-                <h3>Jääkuningas</h3>
-                <p>Ui 50 kertaa</p>
-                <div className="achievement-badge">Avattu</div>
-              </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">⏰</div>
+                    <div className="stat-label">Pisin uinti</div>
+                    <div className="stat-value">{formatSecondsAsDuration(stats.longest_duration)}</div>
+                  </div>
 
-              <div className="achievement-card unlocked">
-                <div className="achievement-icon">⏱️</div>
-                <h3>Kestävyysjuoksija</h3>
-                <p>Ui yli 5 minuuttia</p>
-                <div className="achievement-badge">Avattu</div>
-              </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">😤</div>
+                    <div className="stat-label">Kirosanat</div>
+                    <div className="stat-value">{stats.total_swear_words}</div>
+                  </div>
 
-              <div className="achievement-card locked">
-                <div className="achievement-icon">❄️</div>
-                <h3>Arktinen sankari</h3>
-                <p>Ui 100 kertaa</p>
-                <div className="achievement-badge">Lukittu</div>
-              </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">🧖</div>
+                    <div className="stat-label">Saunakerrat</div>
+                    <div className="stat-value">{stats.total_sauna_sessions}</div>
+                    <div className="stat-trend">{stats.total_sauna_duration} min yhteensä</div>
+                  </div>
 
-              <div className="achievement-card locked">
-                <div className="achievement-icon">🎯</div>
-                <h3>Viikon voittaja</h3>
-                <p>Ui 7 päivää putkeen</p>
-                <div className="achievement-badge">Lukittu</div>
-              </div>
-            </div>
-          </section> */}
+                  <div className="stat-card">
+                    <div className="stat-icon">🧘</div>
+                    <div className="stat-label">Mielialamuutos</div>
+                    <div className="stat-value">{formatMoodDelta(stats.average_mood_improvement)}</div>
+                    <div className="stat-trend up">Ennen vs jälkeen</div>
+                  </div>
+
+                  <div className="stat-card">
+                    <div className="stat-icon">📍</div>
+                    <div className="stat-label">Suosittu paikka</div>
+                    <div className="stat-value stat-value-text">
+                      {stats.favorite_location ?? '–'}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {stats.visits_by_month.length > 0 && (
+                <section className="chart-section">
+                  <h2>Käynnit kuukausittain</h2>
+                  <div className="bar-chart">
+                    {stats.visits_by_month.map((item) => (
+                      <div key={item.month} className="bar-chart-item">
+                        <div
+                          className="bar-chart-bar"
+                          style={{ height: `${monthPeak ? (item.count / monthPeak) * 100 : 0}%` }}
+                          title={`${item.count} käyntiä`}
+                        />
+                        <span className="bar-chart-label">{formatMonthLabel(item.month)}</span>
+                        <span className="bar-chart-value">{item.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              <section className="split-section">
+                {stats.location_breakdown.length > 0 && (
+                  <div className="split-card">
+                    <h2>Paikat</h2>
+                    <ul className="breakdown-list">
+                      {stats.location_breakdown.map((item) => (
+                        <li key={item.location}>
+                          <span>{item.location}</span>
+                          <div className="breakdown-bar-wrap">
+                            <div
+                              className="breakdown-bar"
+                              style={{
+                                width: `${locationPeak ? (item.visits / locationPeak) * 100 : 0}%`,
+                              }}
+                            />
+                          </div>
+                          <strong>{item.visits}</strong>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="split-card">
+                  <h2>Sauna vs ei saunaa</h2>
+                  <div className="sauna-split">
+                    <div className="sauna-split-row">
+                      <span>Saunan kanssa</span>
+                      <strong>{stats.sauna_breakdown.with_sauna}</strong>
+                    </div>
+                    <div className="sauna-split-row">
+                      <span>Ilman saunaa</span>
+                      <strong>{stats.sauna_breakdown.without_sauna}</strong>
+                    </div>
+                    {saunaTotal > 0 && (
+                      <div className="sauna-ratio">
+                        {Math.round((stats.sauna_breakdown.with_sauna / saunaTotal) * 100)}% saunan kanssa
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+
+              <section className="achievements-section">
+                <h2>Saavutukset 🏆</h2>
+                <div className="achievements-grid">
+                  {stats.achievements.map((achievement) => (
+                    <div
+                      key={achievement.id}
+                      className={`achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`}
+                    >
+                      <div className="achievement-icon">
+                        {achievement.id === 'ice_king' && '🥶'}
+                        {achievement.id === 'endurance' && '⏱️'}
+                        {achievement.id === 'arctic_hero' && '❄️'}
+                        {achievement.id === 'week_warrior' && '🎯'}
+                        {achievement.id === 'sauna_regular' && '🧖'}
+                        {achievement.id === 'cold_heart' && '💙'}
+                      </div>
+                      <h3>{achievement.title}</h3>
+                      <p>{achievement.description}</p>
+                      <div className="achievement-badge">
+                        {achievement.unlocked ? 'Avattu' : 'Lukittu'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
         </div>
       </div>
 

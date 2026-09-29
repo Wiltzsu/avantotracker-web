@@ -58,15 +58,90 @@ interface AvantoListResponse {
   };
 }
 
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  unlocked: boolean;
+}
+
+export interface MonthlyVisit {
+  month: string;
+  count: number;
+}
+
+export interface LocationBreakdownItem {
+  location: string;
+  visits: number;
+}
+
+export interface SaunaBreakdown {
+  with_sauna: number;
+  without_sauna: number;
+}
+
 export interface AvantoStats {
   total_visits: number;
   total_duration: number;
+  average_duration: number;
+  longest_duration: number;
+  average_water_temperature: number | null;
+  coldest_water_temperature: number | null;
+  total_swear_words: number;
+  total_sauna_sessions: number;
+  total_sauna_duration: number;
+  average_mood_improvement: number | null;
+  favorite_location: string | null;
+  this_week_visits: number;
+  this_month_visits: number;
+  current_streak_days: number;
+  best_streak_days: number;
+  visits_by_month: MonthlyVisit[];
+  location_breakdown: LocationBreakdownItem[];
+  sauna_breakdown: SaunaBreakdown;
+  achievements: Achievement[];
+  period: {
+    start_date: string | null;
+    end_date: string | null;
+  };
 }
 
-// Define the API response wrapper (what the API actually returns)
+export interface DashboardSnapshot {
+  label: string;
+  visits: number;
+  total_duration: number;
+  average_duration: number;
+  sauna_sessions: number;
+  average_water_temperature: number | null;
+}
+
+export interface DashboardHighlights {
+  coldest_water_temperature: number | null;
+  longest_duration: number;
+  total_swear_words: number;
+  favorite_location: string | null;
+  average_mood_improvement: number | null;
+}
+
+export interface DashboardData {
+  monthly_snapshot: DashboardSnapshot;
+  days_since_last_dip: number | null;
+  last_dip_date: string | null;
+  current_streak_days: number;
+  best_streak_days: number;
+  recent_avantos: AvantoResponse[];
+  highlights: DashboardHighlights;
+}
+
 interface AvantoStatsResponse {
   data: AvantoStats;
 }
+
+interface DashboardResponse {
+  data: DashboardData;
+}
+
+export type StatsRange = 'all' | 'month' | '6months' | 'year';
 
 // Base URL for the backend API, injected at build time
 const API_BASE = import.meta.env.VITE_API_URL;
@@ -211,10 +286,17 @@ export const avantoAPI = {
     await apiClient.delete(`/api/v1/avanto/${id}`);
   },
 
-  stats: async (): Promise<AvantoStats> => {
-    const response = await apiClient.get<AvantoStatsResponse>(`/api/v1/stats`);
+  stats: async (range: StatsRange = 'all'): Promise<AvantoStats> => {
+    const response = await apiClient.get<AvantoStatsResponse>('/api/v1/stats', {
+      params: range === 'all' ? undefined : { range },
+    });
     return response.data.data;
-  }
+  },
+
+  dashboard: async (): Promise<DashboardData> => {
+    const response = await apiClient.get<DashboardResponse>('/api/v1/dashboard');
+    return response.data.data;
+  },
 };
 
 export default apiClient;

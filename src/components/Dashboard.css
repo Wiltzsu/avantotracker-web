@@ -112,6 +112,29 @@
   background: #334155;
 }
 
+.dashboard-state,
+.dashboard-error {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-error {
+  border-color: #ef4444;
+  color: #fecaca;
+}
+
+.activity-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.activity-temp {
+  font-weight: 600;
+}
+
 .action-icon {
   width: 50px;
   height: 50px;

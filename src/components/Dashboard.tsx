@@ -1,26 +1,41 @@
-import React from 'react';
-import { Link } from "react-router-dom";
-
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from './Header.js';
 import Footer from './Footer.js';
+import { avantoAPI, DashboardData } from '../services/api';
+import { getApiErrorMessage } from '../utils/apiErrors';
+import {
+  formatDaysSince,
+  formatMoodDelta,
+  formatSecondsAsDuration,
+  formatTemperature,
+} from '../utils/statsFormatters';
+import { formatDate, formatDuration, getTemperatureColor } from '../utils/formatters';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  // Mock data - replace with real data from your API
-  const stats = {
-    totalAvannot: 47,
-    thisWeek: 3,
-    avgTemperature: -2.1,
-    avgDuration: 4.5,
-    totalSwearWords: 127,
-    favoriteLocation: "Seurasaari"
-  };
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const recentActivity = [
-    { type: 'success', message: 'Uusi avanto lisätty Seurasaari', time: '2 tuntia sitten' },
-    { type: 'info', message: 'Viikon tilastot päivittyivät', time: 'eilen 19:45' },
-    { type: 'warning', message: 'Muistutus: Huominen aamu-uinti', time: 'huomenna 08:00' }
-  ];
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await avantoAPI.dashboard();
+        setDashboard(data);
+      } catch (err) {
+        setError(getApiErrorMessage(err, 'Etusivun lataus epäonnistui.'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  const snapshot = dashboard?.monthly_snapshot;
 
   return (
     <>
@@ -29,18 +44,18 @@ const Dashboard = () => {
       </div>
 
       <div className="dashboard-container">
-        {/* Hero Section */}
         <section className="dashboard-hero">
-        <div className="ice-lake">
-          </div>
           <div className="hero-content">
             <h1>Tervetuloa takaisin! 👋</h1>
-            <p>Hallinnoi avantokäyntejä, tarkastele trendejä ja tilastoja alla olevista toiminnoista.</p>
+            <p>
+              {dashboard
+                ? `Viimeisin avanto ${formatDaysSince(dashboard.days_since_last_dip).toLowerCase()}.`
+                : 'Hallinnoi avantokäyntejä, tarkastele trendejä ja tilastoja alla olevista toiminnoista.'}
+            </p>
           </div>
         </section>
 
         <div className="dashboard-main">
-          {/* Quick Actions */}
           <section className="quick-actions-section">
             <h2>Pikatoiminnot</h2>
             <div className="action-cards">
@@ -73,104 +88,116 @@ const Dashboard = () => {
             </div>
           </section>
 
+          {loading && <div className="dashboard-state">Ladataan etusivua...</div>}
+          {error && <div className="dashboard-error">{error}</div>}
 
-          {/* Stats Grid 
-          <section className="stats-section">
-            <h2>Keskeiset tilastot</h2>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon">🏊</div>
-                <div className="stat-content">
-                  <div className="stat-label">Tämän viikon avannot</div>
-                  <div className="stat-value">{stats.thisWeek}</div>
-                  <div className="stat-trend up">+2 viikosta</div>
-                </div>
-              </div>
+          {!loading && !error && dashboard && snapshot && (
+            <>
+              <section className="stats-section">
+                <h2>Tämän kuun tilanne</h2>
+                <div className="stats-grid">
+                  <div className="stat-card">
+                    <div className="stat-icon">🏊</div>
+                    <div className="stat-content">
+                      <div className="stat-label">Käynnit</div>
+                      <div className="stat-value">{snapshot.visits}</div>
+                      <div className="stat-trend flat">{snapshot.label}</div>
+                    </div>
+                  </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">🌡️</div>
-                <div className="stat-content">
-                  <div className="stat-label">Keskimääräinen lämpötila</div>
-                  <div className="stat-value">{stats.avgTemperature}°C</div>
-                  <div className="stat-trend down">-0.3°C</div>
-                </div>
-              </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">⏱️</div>
+                    <div className="stat-content">
+                      <div className="stat-label">Kylmäaika</div>
+                      <div className="stat-value">
+                        {formatSecondsAsDuration(snapshot.total_duration)}
+                      </div>
+                      <div className="stat-trend up">
+                        Keskimäärin {formatSecondsAsDuration(snapshot.average_duration)}
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">⏱️</div>
-                <div className="stat-content">
-                  <div className="stat-label">Keskimääräinen kesto</div>
-                  <div className="stat-value">{stats.avgDuration} min</div>
-                  <div className="stat-trend up">+12%</div>
-                </div>
-              </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">🔥</div>
+                    <div className="stat-content">
+                      <div className="stat-label">Putki</div>
+                      <div className="stat-value">{dashboard.current_streak_days} pv</div>
+                      <div className="stat-trend flat">Paras {dashboard.best_streak_days} pv</div>
+                    </div>
+                  </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">💬</div>
-                <div className="stat-content">
-                  <div className="stat-label">Kirosanat yhteensä</div>
-                  <div className="stat-value">{stats.totalSwearWords}</div>
-                  <div className="stat-trend flat">0%</div>
-                </div>
-              </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">🌡️</div>
+                    <div className="stat-content">
+                      <div className="stat-label">Keskilämpö</div>
+                      <div className="stat-value">
+                        {formatTemperature(snapshot.average_water_temperature)}
+                      </div>
+                      <div className="stat-trend down">
+                        Kylmin {formatTemperature(dashboard.highlights.coldest_water_temperature)}
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">📍</div>
-                <div className="stat-content">
-                  <div className="stat-label">Suosituin paikka</div>
-                  <div className="stat-value">{stats.favoriteLocation}</div>
-                  <div className="stat-trend flat">Suosikki</div>
-                </div>
-              </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">🧖</div>
+                    <div className="stat-content">
+                      <div className="stat-label">Saunakerrat</div>
+                      <div className="stat-value">{snapshot.sauna_sessions}</div>
+                      <div className="stat-trend flat">Tässä kuussa</div>
+                    </div>
+                  </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">🎯</div>
-                <div className="stat-content">
-                  <div className="stat-label">Kokonaisavannot</div>
-                  <div className="stat-value">{stats.totalAvannot}</div>
-                  <div className="stat-trend up">+8%</div>
-                </div>
-              </div>
-            </div>
-          </section>*/}
-
-          {/* Recent Activity 
-          <section className="activity-section">
-            <h2>Viimeisimmät tapahtumat</h2>
-            <div className="activity-list">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="activity-item">
-                  <div className={`activity-dot ${activity.type}`} />
-                  <div className="activity-content">
-                    <div className="activity-message">{activity.message}</div>
-                    <div className="activity-time">{activity.time}</div>
+                  <div className="stat-card">
+                    <div className="stat-icon">😤</div>
+                    <div className="stat-content">
+                      <div className="stat-label">Kirosanat</div>
+                      <div className="stat-value">{dashboard.highlights.total_swear_words}</div>
+                      <div className="stat-trend flat">
+                        Mieliala {formatMoodDelta(dashboard.highlights.average_mood_improvement)}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </section>*/}
+              </section>
 
-          {/* Quick Tips 
-          <section className="tips-section">
-            <h2>Vinkkejä</h2>
-            <div className="tips-grid">
-              <div className="tip-card">
-                <div className="tip-icon">❄️</div>
-                <h4>Talvi on täällä!</h4>
-                <p>Muista lämpimät vaatteet ja kuumaa juomaa avannon jälkeen.</p>
-              </div>
-              <div className="tip-card">
-                <div className="tip-icon">📱</div>
-                <h4>Ota selfie</h4>
-                <p>Tallenna muistot jokaisesta avannosta kuvilla.</p>
-              </div>
-              <div className="tip-card">
-                <div className="tip-icon">🔥</div>
-                <h4>Sauna on paras</h4>
-                <p>Lämmittele saunassa ennen ja jälkeen avannon.</p>
-              </div>
-            </div>
-          </section>*/}
+              <section className="activity-section">
+                <h2>Viimeisimmät avannot</h2>
+                {dashboard.recent_avantos.length === 0 ? (
+                  <div className="dashboard-state">Ei merkintöjä vielä. Lisää ensimmäinen avanto.</div>
+                ) : (
+                  <div className="activity-list">
+                    {dashboard.recent_avantos.map((avanto) => (
+                      <Link
+                        key={avanto.avanto_id}
+                        to={`/avanto/${avanto.avanto_id}`}
+                        className="activity-item activity-link"
+                      >
+                        <div className="activity-dot success" />
+                        <div className="activity-content">
+                          <div className="activity-message">
+                            {avanto.location || 'Tuntematon paikka'} ·{' '}
+                            {formatDuration(avanto.duration_minutes, avanto.duration_seconds)}
+                            {avanto.water_temperature !== null && (
+                              <span
+                                className="activity-temp"
+                                style={{ color: getTemperatureColor(avanto.water_temperature) }}
+                              >
+                                {' '}
+                                · {avanto.water_temperature}°C
+                              </span>
+                            )}
+                          </div>
+                          <div className="activity-time">{formatDate(avanto.date)}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </>
+          )}
         </div>
       </div>
 
