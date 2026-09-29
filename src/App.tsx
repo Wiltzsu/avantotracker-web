@@ -8,6 +8,7 @@ import NewIceBath from './components/NewIceBath';
 import Stats from './components/Stats';
 import History from './components/History';
 import IceBathDetail from './components/IceBathDetail';
+import EditIceBath from './components/EditIceBath';
 import './App.css';
 
 function App() {
@@ -28,7 +29,8 @@ function App() {
               <Route path="/new" element={<NewIceBath />} />
               <Route path="/stats" element={<Stats />} />
               <Route path="/history" element={<History />} />
-              <Route path="/avanto/:id" element={<IceBathDetail />} /> 
+              <Route path="/avanto/:id" element={<IceBathDetail />} />
+              <Route path="/avanto/:id/edit" element={<EditIceBath />} />
             </Route>
 
             {/* Default redirect */}

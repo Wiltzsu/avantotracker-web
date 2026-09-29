@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from './Header.js';
 import Footer from './Footer.js';
 import { avantoAPI, AvantoResponse } from '../services/api';
@@ -8,9 +8,11 @@ import { getTemperatureColor, formatDuration, formatDate } from '../utils/format
 
 const IceBathDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [iceBath, setIceBath] = useState<AvantoResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   
   useEffect(() => {
     // Load single ice bath
@@ -38,6 +40,23 @@ const IceBathDetail: React.FC = () => {
 
     fetchIceBath();
   }, [id]); // Re-run whenever id changes
+
+  const handleDelete = async () => {
+    if (!id || !window.confirm('Poistetaanko tämä avanto?')) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await avantoAPI.delete(id);
+      navigate('/history');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Poisto epäonnistui';
+      setError(errorMessage);
+    } finally {
+      setDeleting(false);
+    }
+  };
   
   if (loading) {
     return (
@@ -72,7 +91,27 @@ const IceBathDetail: React.FC = () => {
       <Header />
       <div className="icebath-container">
         <div className="avanto-detail-card">
-          <h2>Avantotiedot</h2>
+          <div className="detail-header">
+            <h2>Avantotiedot</h2>
+            {id && (
+              <div className="detail-actions">
+                <Link to="/history" className="btn-secondary detail-btn">
+                  Takaisin
+                </Link>
+                <Link to={`/avanto/${id}/edit`} className="btn-primary detail-btn">
+                  Muokkaa
+                </Link>
+                <button
+                  type="button"
+                  className="btn-danger detail-btn"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? 'Poistetaan...' : 'Poista'}
+                </button>
+              </div>
+            )}
+          </div>
           {iceBath && (
             <div className="avanto-info">
               <div className="info-section">

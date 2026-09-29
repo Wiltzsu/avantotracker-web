@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import type { AvantoPayload } from '../utils/avantoForm';
 
 // Type definitions
 interface User {
@@ -24,11 +25,13 @@ interface AuthResponse {
   message?: string;
 }
 
-interface AvantoData {
-  date?: string;
-  duration?: number;
-  temperature?: number;
-  notes?: string;
+interface AvantoMutationResponse {
+  data: AvantoResponse;
+  message?: string;
+}
+
+interface MeResponse {
+  user: User;
 }
 
 export interface AvantoResponse {
@@ -182,8 +185,8 @@ export const authAPI = {
   },
   
   me: async (): Promise<User> => {
-    const response = await apiClient.get<User>('/api/me');
-    return response.data;
+    const response = await apiClient.get<MeResponse>('/api/me');
+    return response.data.user;
   }
 };
 
@@ -196,9 +199,9 @@ export const avantoAPI = {
     return response.data;
   },
   
-  create: async (data: AvantoData): Promise<AvantoResponse> => {
-    const response = await apiClient.post<AvantoResponse>('/api/v1/avanto', data);
-    return response.data;
+  create: async (data: AvantoPayload): Promise<AvantoResponse> => {
+    const response = await apiClient.post<AvantoMutationResponse>('/api/v1/avanto', data);
+    return response.data.data;
   },
   
   getById: async (id: string | number): Promise<AvantoResponse> => {
@@ -206,13 +209,13 @@ export const avantoAPI = {
     return response.data.data;
   },
   
-  update: async (id: string | number, data: Partial<AvantoData>): Promise<AvantoResponse> => {
-    const response = await apiClient.put<AvantoResponse>(`/api/v1/avanto/${id}`, data);
-    return response.data;
+  update: async (id: string | number, data: Partial<AvantoPayload>): Promise<AvantoResponse> => {
+    const response = await apiClient.put<AvantoMutationResponse>(`/api/v1/avanto/${id}`, data);
+    return response.data.data;
   },
   
   delete: async (id: string | number): Promise<void> => {
-    await apiClient.delete(`/v1/avanto/${id}`);
+    await apiClient.delete(`/api/v1/avanto/${id}`);
   },
 
   stats: async (): Promise<AvantoStats> => {
