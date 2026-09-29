@@ -27,6 +27,7 @@ VITE_API_URL=http://localhost:8000 npm run dev
 - React SPA with protected routes
 - Session restore via `/api/me` on load
 - Login and logout with Bearer tokens (registration disabled)
+- History filters, CSV export, personal records, mood chart, optional selfies
 - Create, edit, delete, and browse avanto entries
 - PWA manifest for install/add-to-home-screen
 
