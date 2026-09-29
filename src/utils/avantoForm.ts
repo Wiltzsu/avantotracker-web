@@ -29,13 +29,13 @@ export interface AvantoPayload {
 export const emptyAvantoFormData = (): AvantoFormData => ({
   date: new Date().toISOString().split('T')[0],
   location: '',
-  water_temperature: '',
-  duration_minutes: '',
-  duration_seconds: '',
-  swear_words: '',
-  feeling_before: '',
-  feeling_after: '',
-  sauna: '',
+  water_temperature: '0',
+  duration_minutes: '1',
+  duration_seconds: '0',
+  swear_words: '0',
+  feeling_before: '4',
+  feeling_after: '8',
+  sauna: '0',
   sauna_duration: '',
 });
 
