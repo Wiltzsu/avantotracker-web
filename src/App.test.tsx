@@ -10,7 +10,6 @@ vi.mock('./services/api', () => ({
   authAPI: {
     me: meMock,
     login: vi.fn(),
-    register: vi.fn(),
     logout: vi.fn(),
   },
   setAuthErrorHandler: vi.fn(),

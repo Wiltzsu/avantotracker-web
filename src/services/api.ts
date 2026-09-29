@@ -8,12 +8,6 @@ interface User {
   name: string;
 }
 
-interface UserData {
-  email: string;
-  password: string;
-  name?: string;
-}
-
 interface LoginCredentials {
   email: string;
   password: string;
@@ -112,7 +106,7 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
-const SENSITIVE_AUTH_PATHS = ['/api/login', '/api/register'];
+const SENSITIVE_AUTH_PATHS = ['/api/login'];
 
 const isSensitiveAuthRequest = (url?: string): boolean =>
   SENSITIVE_AUTH_PATHS.some((path) => url?.includes(path));
@@ -173,11 +167,6 @@ apiClient.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  register: async (userData: UserData): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/api/register', userData);
-    return response.data;
-  },
-  
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/api/login', credentials);
     return response.data;

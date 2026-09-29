@@ -22,12 +22,6 @@ interface LoginCredentials {
   password: string;
 }
 
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
-
 interface AuthResult {
   success: boolean;
   user?: User;
@@ -37,7 +31,6 @@ interface AuthResult {
 interface AuthContextValue {
   user: User | null;
   login: (credentials: LoginCredentials) => Promise<AuthResult>;
-  register: (userData: RegisterData) => Promise<AuthResult>;
   logout: () => Promise<void>;
   loading: boolean;
   error: string | null;
@@ -133,28 +126,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const register = async (userData: RegisterData): Promise<AuthResult> => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await authAPI.register(userData);
-      const { user: newUser, token } = response;
-
-      setAuthToken(token);
-      setUserData(newUser);
-      setUser(newUser);
-
-      return { success: true, user: newUser };
-    } catch (err) {
-      const errorMessage = getApiErrorMessage(err, 'Registration failed. Please try again.');
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const logout = async (): Promise<void> => {
     try {
       await authAPI.logout();
@@ -169,7 +140,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextValue = {
     user,
     login,
-    register,
     logout,
     loading,
     error,

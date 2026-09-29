@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Footer from './Footer.js';
 import './Login.css';
 
@@ -122,15 +122,6 @@ const Login = () => {
                 )}
               </button>
             </form>
-
-            <div className="register-footer">
-              <p>
-                Ei käyttäjää?{' '}
-                <Link to="/register" className="register-link">
-                  Luo tili
-                </Link>
-              </p>
-            </div>
 
             {/* Quick feature list below login - optional */}
             {/* Feature cards below login */}
