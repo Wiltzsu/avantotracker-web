@@ -20,6 +20,7 @@ const ACHIEVEMENT_ICONS: Record<string, string> = {
   silent_seal: '🦭',
   hot_cold: '♨️',
   sauna_regular: '🧖',
+  sauna_majuri: '👑',
   long_sauna: '🔥',
   explorer: '🗺️',
   home_ground: '🏠',
