@@ -22,6 +22,12 @@ interface AuthResponse {
 interface AvantoMutationResponse {
   data: AvantoResponse;
   message?: string;
+  new_achievements?: Achievement[];
+}
+
+export interface AvantoMutationResult {
+  avanto: AvantoResponse;
+  newAchievements: Achievement[];
 }
 
 interface MeResponse {
@@ -333,9 +339,12 @@ export const avantoAPI = {
     return response.data;
   },
   
-  create: async (data: AvantoPayload): Promise<AvantoResponse> => {
+  create: async (data: AvantoPayload): Promise<AvantoMutationResult> => {
     const response = await apiClient.post<AvantoMutationResponse>('/api/v1/avanto', data);
-    return response.data.data;
+    return {
+      avanto: response.data.data,
+      newAchievements: response.data.new_achievements ?? [],
+    };
   },
   
   getById: async (id: string | number): Promise<AvantoResponse> => {
@@ -391,7 +400,7 @@ export const avantoAPI = {
     window.URL.revokeObjectURL(url);
   },
 
-  uploadSelfie: async (id: string | number, file: File): Promise<AvantoResponse> => {
+  uploadSelfie: async (id: string | number, file: File): Promise<AvantoMutationResult> => {
     const formData = new FormData();
     formData.append('selfie', file);
 
@@ -401,7 +410,10 @@ export const avantoAPI = {
       { headers: { 'Content-Type': 'multipart/form-data' } }
     );
 
-    return response.data.data;
+    return {
+      avanto: response.data.data,
+      newAchievements: response.data.new_achievements ?? [],
+    };
   },
 
   deleteSelfie: async (id: string | number): Promise<AvantoResponse> => {

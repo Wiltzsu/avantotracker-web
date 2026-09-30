@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header.js';
 import Footer from './Footer.js';
 import IceBathForm from './IceBathForm';
-import { avantoAPI } from '../services/api.ts';
+import AchievementUnlockModal from './AchievementUnlockModal';
+import { avantoAPI, Achievement } from '../services/api.ts';
 import { emptyAvantoFormData } from '../utils/avantoForm';
+import { mergeNewAchievements } from '../utils/mergeAchievements';
 import iceLake from '../ice-lake.jpg';
 import './NewIceBath.css';
 
 const NewIceBath: React.FC = () => {
   const navigate = useNavigate();
+  const [unlockedAchievements, setUnlockedAchievements] = useState<Achievement[] | null>(null);
+
+  const finishFlow = () => {
+    setUnlockedAchievements(null);
+    navigate('/dashboard');
+  };
 
   return (
     <div className="page-shell form-page">
@@ -30,15 +38,29 @@ const NewIceBath: React.FC = () => {
         submittingLabel="Lisätään..."
         cancelTo="/dashboard"
         onSubmit={async (payload, selfie) => {
-          const avanto = await avantoAPI.create(payload);
-          if (selfie) {
-            await avantoAPI.uploadSelfie(avanto.avanto_id, selfie);
+          const created = await avantoAPI.create(payload);
+          const selfieResult = selfie
+            ? await avantoAPI.uploadSelfie(created.avanto.avanto_id, selfie)
+            : null;
+
+          const newAchievements = mergeNewAchievements(
+            created.newAchievements,
+            selfieResult?.newAchievements ?? [],
+          );
+
+          if (newAchievements.length > 0) {
+            setUnlockedAchievements(newAchievements);
+            return;
           }
-          navigate('/dashboard');
+
+          finishFlow();
         }}
       />
       </main>
       <Footer />
+      {unlockedAchievements && (
+        <AchievementUnlockModal achievements={unlockedAchievements} onClose={finishFlow} />
+      )}
     </div>
   );
 };
