@@ -1,11 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import AchievementUnlockModal from './AchievementUnlockModal';
 
 describe('AchievementUnlockModal', () => {
-  it('renders achievements and calls onClose', async () => {
-    const user = userEvent.setup();
+  it('renders achievements and calls onClose', () => {
     const onClose = vi.fn();
 
     render(
@@ -23,7 +21,7 @@ describe('AchievementUnlockModal', () => {
     );
 
     expect(screen.getByText('Ensimmäinen askel')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Jee!' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Jee!' }));
     expect(onClose).toHaveBeenCalledOnce();
   });
 });
