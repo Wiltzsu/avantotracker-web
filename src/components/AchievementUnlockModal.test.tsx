@@ -12,7 +12,7 @@ describe('AchievementUnlockModal', () => {
           {
             id: 'first_dip',
             title: 'Ensimmäinen askel',
-            description: 'Ensimmäinen avanto kirjattu',
+            description: 'Ensimmäinen avantosi on kirjattu',
             unlocked: true,
           },
         ]}
