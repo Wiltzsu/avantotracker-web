@@ -134,14 +134,29 @@ select option {
 .page-hero {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   padding: 2.75rem 1.25rem 2.25rem;
   text-align: center;
   border-bottom: 1px solid var(--color-border);
-  background:
-    linear-gradient(180deg, rgba(8, 16, 30, 0.55) 0%, rgba(8, 16, 30, 0.92) 100%),
-    var(--hero-image, none);
+  background-color: #08101e;
+  background-image: var(--hero-image, none);
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 16, 30, 0.55) 0%,
+    rgba(8, 16, 30, 0.88) 70%,
+    rgb(8, 16, 30) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .page-hero::after {
@@ -151,6 +166,13 @@ select option {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
   opacity: 0.5;
+  z-index: 1;
+}
+
+.page-hero h1,
+.page-hero p {
+  position: relative;
+  z-index: 1;
 }
 
 .page-hero h1 {
