@@ -145,7 +145,7 @@ select option {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: var(--hero-image);
+  background-image: var(--hero-image, none);
   background-size: cover;
   background-position: center 40%;
   background-repeat: no-repeat;
