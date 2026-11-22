@@ -94,8 +94,6 @@ jobs:
         ssh "${SSH_OPTS[@]}" "$REMOTE" bash -s <<EOF
           set -euo pipefail
           mkdir -p '${REMOTE_DIR}'
-          sudo -n chown -R "\$(whoami):www-data" /var/www/avantotracker-web
-          sudo -n chmod -R g+w /var/www/avantotracker-web
           rm -rf '${REMOTE_DIR:?}'/*
         EOF
 
