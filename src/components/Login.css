@@ -4,9 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.5rem 1rem;
-  background:
-    linear-gradient(rgba(12, 17, 23, 0.2), rgba(12, 17, 23, 0.6)),
-    url('../lake-mountains.jpg') center / cover no-repeat;
+  background: var(--color-bg);
 }
 
 .login-panel {

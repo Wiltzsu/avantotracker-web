@@ -1,42 +1,14 @@
-/* Photo band: the image is the point here, so it stays visible (image test). */
-.dashboard-photo {
-  min-height: 280px;
+.dashboard-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
-  /* Scrim only along the bottom edge behind the text; the rest of the photo stays clear */
-  background-image:
-    linear-gradient(to top, rgba(12, 17, 23, 0.95) 0%, rgba(12, 17, 23, 0.7) 45%, rgba(12, 17, 23, 0) 90%),
-    var(--photo);
-  background-size: cover;
-  background-position: center 45%;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.dashboard-photo-inner {
-  width: 100%;
-  max-width: var(--page-max);
-  margin: 0 auto;
-  padding: 3rem 1.25rem 1.5rem;
-}
-
-.dashboard-photo h1 {
-  margin: 0;
-  font-size: var(--font-size-xl);
-  letter-spacing: -0.01em;
-}
-
-.dashboard-photo p {
-  margin: 0.25rem 0 0;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.dashboard-photo .btn-primary {
-  margin-top: 1rem;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .month-section {
-  padding: 2.5rem 0 2rem;
+  padding: 1rem 0 2rem;
+  border-top: 1px solid var(--color-border);
 }
 
 /* One big number + a smaller list, not six equal cards */
@@ -111,14 +83,6 @@
 }
 
 @media (max-width: 720px) {
-  .dashboard-photo {
-    min-height: 240px;
-  }
-
-  .dashboard-photo h1 {
-    font-size: var(--font-size-lg);
-  }
-
   .month-layout {
     grid-template-columns: 1fr;
     gap: 1.25rem;

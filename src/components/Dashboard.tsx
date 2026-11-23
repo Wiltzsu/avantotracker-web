@@ -10,7 +10,6 @@ import {
   formatTemperature,
 } from '../utils/statsFormatters';
 import { formatDate, formatDuration } from '../utils/formatters';
-import iceLake from '../ice-lake.jpg';
 import './Dashboard.css';
 
 const lastDipHeadline = (days: number | null): string => {
@@ -50,17 +49,17 @@ const Dashboard = () => {
     <div className="page-shell dashboard-page">
       <Header />
 
-      <section className="dashboard-photo" style={{ ['--photo' as string]: `url(${iceLake})` }}>
-        <div className="dashboard-photo-inner">
+      <header className="page-head dashboard-head">
+        <div>
           <h1>{dashboard ? lastDipHeadline(dashboard.days_since_last_dip) : 'Etusivu'}</h1>
           {dashboard?.last_dip_date && (
             <p className="num">{formatDate(dashboard.last_dip_date)}</p>
           )}
-          <Link to="/new" className="btn-primary">
-            Lisää avanto
-          </Link>
         </div>
-      </section>
+        <Link to="/new" className="btn-primary">
+          Lisää avanto
+        </Link>
+      </header>
 
       <main className="page-main">
         {loading && <p className="state-banner">Ladataan…</p>}
