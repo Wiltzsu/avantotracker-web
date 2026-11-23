@@ -1,253 +1,94 @@
-.detail-page .avanto-detail-card {
+.detail-head > *,
+.detail-main > * {
   max-width: 760px;
-  margin: 0 auto;
 }
 
-.detail-header {
+.detail-back {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  font-size: var(--font-size-sm);
+}
+
+.detail-title-row {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.5rem;
 }
 
-.avanto-detail-card h2 {
-  margin: 0;
-  text-align: center;
-  font-size: clamp(1.65rem, 3vw, 2.1rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #e0f2fe 0%, #67e8f9 55%, #5eead4 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.detail-title-row p {
+  margin: 0.3rem 0 0;
+  color: var(--color-text-muted);
 }
 
 .detail-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  justify-content: center;
+  gap: 0.5rem;
 }
 
-.detail-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.65rem 1.1rem;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.18s ease;
+.detail-figures {
+  margin-bottom: 3rem;
 }
 
-.detail-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.detail-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.detail-page .detail-btn.btn-primary {
-  background: var(--color-accent-gradient);
-  color: #042033;
-}
-
-.detail-page .detail-btn.btn-secondary {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-}
-
-.detail-page .detail-btn.btn-danger {
-  background: rgba(251, 113, 133, 0.12);
-  border: 1px solid rgba(251, 113, 133, 0.35);
-  color: #fecdd3;
-}
-
-.avanto-info {
-  padding: 1.5rem;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  backdrop-filter: blur(16px);
-}
-
-.info-section {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.info-section h3 {
-  margin-bottom: 0.35rem;
-  font-size: 1.25rem;
-}
-
-.info-section p {
-  margin: 0.35rem 0;
-  color: var(--color-text-muted);
-}
-
-.detail-page .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.85rem;
-  margin: 1.25rem 0;
-}
-
-.detail-page .stat-card {
-  padding: 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.03);
-  text-align: center;
-}
-
-.detail-page .stat-label {
-  display: block;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  margin-bottom: 0.35rem;
-}
-
-.detail-page .stat-value {
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-.temperature {
-  display: flex;
-  justify-content: center;
-  margin: 0.85rem 0;
-}
-
-.temp-badge {
-  padding: 0.45rem 0.9rem;
-  border-radius: var(--radius-pill);
-  color: #042033;
-  font-weight: 700;
-}
-
-.duration-info,
-.feelings-section,
-.sauna-info,
-.swear-words {
-  padding: 1rem 1.1rem;
-  margin: 1rem 0;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--color-border);
-  border-left-width: 3px;
-}
-
-.duration-info {
-  border-left-color: var(--color-accent);
-}
-
-.feelings-section {
-  border-left-color: var(--color-success);
-}
-
-.sauna-info {
-  border-left-color: var(--color-warning);
-}
-
-.swear-words {
-  border-left-color: var(--color-danger);
-  font-style: italic;
-}
-
-.feelings-section h4,
-.sauna-info h4,
-.swear-words h4 {
-  margin: 0 0 0.65rem;
-  font-size: 1rem;
-}
-
-.feeling-item {
-  margin-bottom: 0.4rem;
-  padding: 0.45rem 0.65rem;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.sauna-yes {
-  color: var(--color-success);
-  font-weight: 600;
-}
-
-.sauna-no {
-  color: var(--color-text-faint);
-}
-
-.swear-words p {
-  margin: 0;
-  color: #fda4af;
-}
-
-.detail-page .loading-spinner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 280px;
-  gap: 0.85rem;
-  color: var(--color-text-muted);
-}
-
-.detail-page .error-message {
-  text-align: center;
-  padding: 1.5rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(251, 113, 133, 0.4);
-  background: rgba(76, 20, 36, 0.3);
-  color: #fecdd3;
-  max-width: 480px;
-  margin: 1.5rem auto;
-}
-
-.selfie-section {
-  margin-top: 1.25rem;
+.selfie-preview {
+  margin: 0 0 1rem;
 }
 
 .selfie-preview img {
   display: block;
   width: 100%;
-  max-width: 320px;
-  border-radius: var(--radius-md);
-  margin-bottom: 0.65rem;
-  border: 1px solid var(--color-border);
+  max-width: 360px;
+  border-radius: var(--radius-card);
 }
 
-.selfie-upload input {
-  display: none;
+.selfie-empty {
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+}
+
+.selfie-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .selfie-upload {
-  display: inline-block;
-  margin-top: 0.65rem;
-  padding: 0.6rem 0.95rem;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
+  position: relative;
+}
+
+.selfie-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/* Keyboard focus lands on the hidden input; show it on the label */
+.selfie-upload:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.selfie-upload.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selfie-remove {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: border-color 0.18s ease;
 }
 
-.selfie-upload:hover {
-  border-color: var(--color-border-strong);
+.selfie-remove:hover:not(:disabled) {
+  text-decoration: underline;
 }
 
-@media (max-width: 768px) {
-  .avanto-info {
-    padding: 1.15rem;
-  }
-
-  .detail-page .stats-grid {
-    grid-template-columns: 1fr;
-  }
+.selfie-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

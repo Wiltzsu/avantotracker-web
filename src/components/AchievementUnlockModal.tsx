@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Achievement } from '../services/api';
-import { getAchievementIcon } from '../utils/achievementIcons';
 import './AchievementUnlockModal.css';
 
 interface AchievementUnlockModalProps {
@@ -12,6 +11,20 @@ const AchievementUnlockModal: React.FC<AchievementUnlockModalProps> = ({
   achievements,
   onClose,
 }) => {
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Focus the close button on open and allow Escape to close (dialog basics)
+  useEffect(() => {
+    closeRef.current?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
@@ -25,31 +38,30 @@ const AchievementUnlockModal: React.FC<AchievementUnlockModalProps> = ({
       onClick={handleBackdropClick}
     >
       <div
-        className="achievement-unlock-modal glass-card"
+        className="achievement-unlock-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="achievement-unlock-title"
       >
-        <p className="achievement-unlock-kicker">Saavutus avattu</p>
         <h2 id="achievement-unlock-title">
-          {achievements.length === 1 ? 'Hyvä!' : `${achievements.length} uutta saavutusta`}
+          {achievements.length === 1 ? 'Uusi saavutus' : `${achievements.length} uutta saavutusta`}
         </h2>
 
         <ul className="achievement-unlock-list">
           {achievements.map((achievement) => (
             <li key={achievement.id}>
-              <span className="achievement-unlock-icon" aria-hidden="true">
-                {getAchievementIcon(achievement.id)}
-              </span>
-              <div>
-                <strong>{achievement.title}</strong>
-                <p>{achievement.description}</p>
-              </div>
+              <strong>{achievement.title}</strong>
+              <p>{achievement.description}</p>
             </li>
           ))}
         </ul>
 
-        <button type="button" className="btn-primary achievement-unlock-close" onClick={onClose}>
+        <button
+          ref={closeRef}
+          type="button"
+          className="btn-primary achievement-unlock-close"
+          onClick={onClose}
+        >
           Jee!
         </button>
       </div>

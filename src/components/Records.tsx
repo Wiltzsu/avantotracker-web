@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from './Header.js';
-import Footer from './Footer.js';
 import { avantoAPI, PersonalRecords } from '../services/api';
 import { getApiErrorMessage } from '../utils/apiErrors';
 import { formatDate } from '../utils/formatters';
@@ -33,38 +32,33 @@ const Records: React.FC = () => {
     <div className="page-shell records-page">
       <Header />
 
-      <section className="page-hero">
+      <header className="page-head records-head">
         <h1>Ennätykset</h1>
-        <p>Henkilökohtaiset huiput kylmästä vedestä, kestosta ja fiiliksestä.</p>
-      </section>
+      </header>
 
-      <main className="page-main">
-        {loading && <div className="state-banner">Ladataan ennätyksiä...</div>}
-        {error && <div className="error-banner">{error}</div>}
+      <main className="page-main records-main">
+        {loading && <p className="state-banner">Ladataan…</p>}
+        {error && <p className="error-banner">{error}</p>}
 
         {!loading && !error && records && (
-          <div className="records-grid">
-            <RecordCard
-              icon="❄️"
+          <ul className="record-list">
+            <RecordRow
               title="Kylmin uinti"
               value={formatTemperature(records.coldest_dip?.value ?? null)}
               record={records.coldest_dip}
             />
-            <RecordCard
-              icon="⏱️"
+            <RecordRow
               title="Pisin uinti"
               value={records.longest_dip ? formatSecondsAsDuration(records.longest_dip.value) : '–'}
               record={records.longest_dip}
             />
-            <RecordCard
-              icon="😤"
+            <RecordRow
               title="Eniten kirosanoja"
               value={records.most_swear_words ? String(records.most_swear_words.value) : '–'}
               record={records.most_swear_words}
             />
-            <RecordCard
-              icon="🧘"
-              title="Paras fiilipiikki"
+            <RecordRow
+              title="Paras fiilispiikki"
               value={
                 records.best_mood_swing
                   ? `+${records.best_mood_swing.value} (${records.best_mood_swing.feeling_before}→${records.best_mood_swing.feeling_after})`
@@ -72,37 +66,31 @@ const Records: React.FC = () => {
               }
               record={records.best_mood_swing}
             />
-          </div>
+          </ul>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 };
 
-interface RecordCardProps {
-  icon: string;
+interface RecordRowProps {
   title: string;
   value: string;
   record: PersonalRecords[keyof PersonalRecords];
 }
 
-const RecordCard: React.FC<RecordCardProps> = ({ icon, title, value, record }) => (
-  <div className="record-card glass-card">
-    <div className="record-icon">{icon}</div>
+const RecordRow: React.FC<RecordRowProps> = ({ title, value, record }) => (
+  <li className="record-row">
     <h2>{title}</h2>
-    <div className="record-value">{value}</div>
+    <span className="record-value num">{value}</span>
     {record ? (
-      <div className="record-meta">
-        <span>{record.location || 'Tuntematon paikka'}</span>
-        <span>{formatDate(record.date)}</span>
-        <Link to={`/avanto/${record.avanto_id}`}>Avaa merkintä</Link>
-      </div>
+      <Link to={`/avanto/${record.avanto_id}`} className="record-meta">
+        {record.location || 'Tuntematon paikka'}, <span className="num">{formatDate(record.date)}</span>
+      </Link>
     ) : (
-      <div className="record-meta">Ei dataa vielä</div>
+      <span className="record-meta">Ei dataa vielä</span>
     )}
-  </div>
+  </li>
 );
 
 export default Records;

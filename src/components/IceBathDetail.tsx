@@ -1,46 +1,45 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Header from './Header.js';
-import Footer from './Footer.js';
-import { avantoAPI, AvantoResponse } from '../services/api';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import Header from './Header';
+import { avantoAPI, Achievement, AvantoResponse } from '../services/api';
+import AchievementUnlockModal from './AchievementUnlockModal';
+import { getApiErrorMessage } from '../utils/apiErrors';
+import { formatDuration, formatDate } from '../utils/formatters';
 import './IceBathDetail.css';
-import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters';
 
 const IceBathDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [iceBath, setIceBath] = useState<AvantoResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Load errors replace the page; action errors show above the data and keep it visible.
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [uploadingSelfie, setUploadingSelfie] = useState(false);
-  
+  const [unlocked, setUnlocked] = useState<Achievement[] | null>(null);
+
   useEffect(() => {
-    // Load single ice bath
     const fetchIceBath = async () => {
       if (!id) {
-        setError('Ice bath ID is missing');
+        setLoadError('Avantoa ei löytynyt.');
         setLoading(false);
         return;
       }
 
       try {
-        setLoading(true); // Show spinner while fetching data
-        const response = await avantoAPI.getById(id);
-
-        setIceBath(response);
-
+        setLoading(true);
+        setIceBath(await avantoAPI.getById(id));
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-        setError(errorMessage);
-        setIceBath(null); // Set null if no ice bath is found
+        setLoadError(getApiErrorMessage(err, 'Avannon lataus epäonnistui.'));
+        setIceBath(null);
       } finally {
-        setLoading(false); // Hide loading spinner
+        setLoading(false);
       }
-    }
+    };
 
     fetchIceBath();
-  }, [id]); // Re-run whenever id changes
+  }, [id]);
 
   const handleSelfieUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -49,12 +48,16 @@ const IceBathDetail: React.FC = () => {
     }
 
     setUploadingSelfie(true);
+    setActionError(null);
     try {
-      const updated = await avantoAPI.uploadSelfie(id, file);
-      setIceBath(updated);
+      // uploadSelfie returns { avanto, newAchievements }, not the avanto itself
+      const result = await avantoAPI.uploadSelfie(id, file);
+      setIceBath(result.avanto);
+      if (result.newAchievements.length > 0) {
+        setUnlocked(result.newAchievements);
+      }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Selfien lataus epäonnistui';
-      setError(errorMessage);
+      setActionError(getApiErrorMessage(err, 'Selfien lataus epäonnistui.'));
     } finally {
       setUploadingSelfie(false);
       event.target.value = '';
@@ -67,12 +70,11 @@ const IceBathDetail: React.FC = () => {
     }
 
     setUploadingSelfie(true);
+    setActionError(null);
     try {
-      const updated = await avantoAPI.deleteSelfie(id);
-      setIceBath(updated);
+      setIceBath(await avantoAPI.deleteSelfie(id));
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Selfien poisto epäonnistui';
-      setError(errorMessage);
+      setActionError(getApiErrorMessage(err, 'Selfien poisto epäonnistui.'));
     } finally {
       setUploadingSelfie(false);
     }
@@ -84,163 +86,136 @@ const IceBathDetail: React.FC = () => {
     }
 
     setDeleting(true);
+    setActionError(null);
     try {
       await avantoAPI.delete(id);
       navigate('/history');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Poisto epäonnistui';
-      setError(errorMessage);
-    } finally {
+      setActionError(getApiErrorMessage(err, 'Poisto epäonnistui.'));
       setDeleting(false);
     }
   };
-  
-  if (loading) {
+
+  if (loading || loadError || !iceBath) {
     return (
       <div className="page-shell detail-page">
         <Header />
-        <main className="page-main">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Ladataan avantoa...</p>
-          </div>
+        <main className="page-main detail-main">
+          {loading ? (
+            <p className="state-banner">Ladataan…</p>
+          ) : (
+            <p className="error-banner">{loadError ?? 'Avantoa ei löytynyt.'}</p>
+          )}
+          <Link to="/history">Takaisin historiaan</Link>
         </main>
-        <Footer />
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="page-shell detail-page">
-        <Header />
-        <main className="page-main">
-          <div className="error-message">
-            <h2>Virhe sivulla</h2>
-            <p>{error}</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  const hasFeelings = iceBath.feeling_before !== null || iceBath.feeling_after !== null;
 
   return (
     <div className="page-shell detail-page">
       <Header />
-      <main className="page-main avanto-detail-card">
-          <div className="detail-header">
-            <h2>Avantotiedot</h2>
-            {id && (
-              <div className="detail-actions">
-                <Link to="/history" className="btn-secondary detail-btn">
-                  Takaisin
-                </Link>
-                <Link to={`/avanto/${id}/edit`} className="btn-primary detail-btn">
-                  Muokkaa
-                </Link>
-                <button
-                  type="button"
-                  className="btn-danger detail-btn"
-                  onClick={handleDelete}
-                  disabled={deleting}
-                >
-                  {deleting ? 'Poistetaan...' : 'Poista'}
-                </button>
-              </div>
-            )}
-          </div>
-          {iceBath && (
-            <div className="avanto-info">
-              <div className="info-section">
-                <h3>{iceBath.location}</h3>
-                <p>{formatDate(iceBath.date)}</p>
-              </div>
 
-              <div className="selfie-section">
-                <h4>Selfie</h4>
-                {iceBath.selfie_url ? (
-                  <div className="selfie-preview">
-                    <img src={iceBath.selfie_url} alt="Avanto selfie" />
-                    <button type="button" className="btn-secondary detail-btn" onClick={handleSelfieDelete} disabled={uploadingSelfie}>
-                      Poista selfie
-                    </button>
-                  </div>
-                ) : (
-                  <p>Ei selfietä vielä.</p>
-                )}
-                <label className="selfie-upload">
-                  {uploadingSelfie ? 'Ladataan...' : 'Lataa selfie'}
-                  <input type="file" accept="image/*" onChange={handleSelfieUpload} disabled={uploadingSelfie} />
-                </label>
-              </div>
-  
-              <div className="stats-grid">
-                <div className="stat-card">
-                  <span className="stat-label">Veden lämpötila</span>
-                  <div className="temperature">
-                    <span 
-                      className="temp-badge"
-                      style={{ backgroundColor: getTemperatureColor(iceBath.water_temperature) }}
-                    >
-                      {iceBath.water_temperature}°C
-                    </span>
-                  </div>
-                </div>
-  
-                <div className="stat-card">
-                  <span className="stat-label">Kesto</span>
-                  <span className="stat-value">
-                    {formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}
-                  </span>
-                </div>
-  
-                <div className="stat-card">
-                  <span className="stat-label">Sauna</span>
-                  <span className="stat-value">
-                    {iceBath.sauna ? 'Kyllä' : 'Ei'}
-                  </span>
-                </div>
-              </div>
-  
-              {(iceBath.feeling_before || iceBath.feeling_after) && (
-                <div className="feelings-section">
-                  <h4>Fiilis</h4>
-                  {iceBath.feeling_before && (
-                    <div className="feeling-item">
-                      <strong>Ennen:</strong> {iceBath.feeling_before}
-                    </div>
-                  )}
-                  {iceBath.feeling_after && (
-                    <div className="feeling-item">
-                      <strong>Jälkeen:</strong> {iceBath.feeling_after}
-                    </div>
-                  )}
-                </div>
-              )}
-  
-              <div className="sauna-info">
-                <h4>Sauna</h4>
-                <p className={iceBath.sauna ? 'sauna-yes' : 'sauna-no'}>
-                  {iceBath.sauna ? 'Kyllä' : 'Ei'}
-                </p>
-                {iceBath.sauna_duration && (
-                  <p>Kesto: {iceBath.sauna_duration} min</p>
-                )}
-              </div>
-  
-              {iceBath.swear_words && (
-                <div className="swear-words">
-                  <h4>Kirosanat</h4>
-                  <p>"{iceBath.swear_words}"</p>
-                </div>
-              )}
+      <header className="page-head detail-head">
+        <Link to="/history" className="detail-back">Historia</Link>
+        <div className="detail-title-row">
+          <div>
+            <h1>{iceBath.location || 'Tuntematon paikka'}</h1>
+            <p className="num">{formatDate(iceBath.date)}</p>
+          </div>
+          <div className="detail-actions">
+            <Link to={`/avanto/${id}/edit`} className="btn-primary">
+              Muokkaa
+            </Link>
+            <button type="button" className="btn-danger" onClick={handleDelete} disabled={deleting}>
+              {deleting ? 'Poistetaan…' : 'Poista'}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="page-main detail-main">
+        {actionError && (
+          <p className="error-banner" role="alert">
+            {actionError}
+          </p>
+        )}
+
+        <dl className="figure-list detail-figures">
+          <div>
+            <dt>Vesi</dt>
+            <dd className="num">
+              {iceBath.water_temperature !== null ? `${iceBath.water_temperature}°C` : '–'}
+            </dd>
+          </div>
+          <div>
+            <dt>Kesto</dt>
+            <dd className="num">{formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}</dd>
+          </div>
+          {hasFeelings && (
+            <div>
+              <dt>Fiilis ennen → jälkeen</dt>
+              <dd className="num">
+                {iceBath.feeling_before ?? '–'} → {iceBath.feeling_after ?? '–'}
+              </dd>
             </div>
           )}
+          <div>
+            <dt>Sauna</dt>
+            <dd className="num">
+              {iceBath.sauna
+                ? iceBath.sauna_duration
+                  ? `${iceBath.sauna_duration} min`
+                  : 'Kyllä'
+                : 'Ei'}
+            </dd>
+          </div>
+          {iceBath.swear_words !== null && (
+            <div>
+              <dt>Kirosanat</dt>
+              <dd className="num">{iceBath.swear_words}</dd>
+            </div>
+          )}
+        </dl>
+
+        <section className="selfie-section">
+          <h2 className="section-title">Selfie</h2>
+          {iceBath.selfie_url ? (
+            <figure className="selfie-preview">
+              <img
+                src={iceBath.selfie_url}
+                alt={`Selfie, ${iceBath.location || 'avanto'} ${formatDate(iceBath.date)}`}
+              />
+            </figure>
+          ) : (
+            <p className="selfie-empty">Ei selfietä.</p>
+          )}
+          <div className="selfie-actions">
+            <label className={`btn-secondary selfie-upload ${uploadingSelfie ? 'is-disabled' : ''}`}>
+              {uploadingSelfie ? 'Ladataan…' : iceBath.selfie_url ? 'Vaihda selfie' : 'Lisää selfie'}
+              <input type="file" accept="image/*" onChange={handleSelfieUpload} disabled={uploadingSelfie} />
+            </label>
+            {iceBath.selfie_url && (
+              <button
+                type="button"
+                className="selfie-remove"
+                onClick={handleSelfieDelete}
+                disabled={uploadingSelfie}
+              >
+                Poista selfie
+              </button>
+            )}
+          </div>
+        </section>
       </main>
-      <Footer />
+
+      {unlocked && (
+        <AchievementUnlockModal achievements={unlocked} onClose={() => setUnlocked(null)} />
+      )}
     </div>
   );
-}
+};
 
 export default IceBathDetail;

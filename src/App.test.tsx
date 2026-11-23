@@ -24,7 +24,7 @@ describe('App', () => {
 
   it('shows login for unauthenticated users', async () => {
     render(<App />);
-    expect(await screen.findByRole('heading', { name: 'Tervetuloa' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Kirjaudu sisään' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Kirjaudu sisään/i })).toBeInTheDocument();
   });
 });

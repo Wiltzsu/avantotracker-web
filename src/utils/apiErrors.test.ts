@@ -43,4 +43,24 @@ describe('getApiErrorMessage', () => {
     expect(getApiErrorMessage(new Error('network down'), 'Fallback')).toBe('network down');
     expect(getApiErrorMessage({}, 'Fallback')).toBe('Fallback');
   });
+
+  it('uses the fallback instead of axios developer text or HTML bodies', () => {
+    const htmlError = new axios.AxiosError(
+      'Request failed with status code 502',
+      'ERR_BAD_RESPONSE',
+      undefined,
+      undefined,
+      {
+        status: 502,
+        statusText: 'Bad Gateway',
+        headers: {},
+        config: { headers: new axios.AxiosHeaders() },
+        data: '<html><body>502 Bad Gateway</body></html>',
+      }
+    );
+    const networkError = new axios.AxiosError('Network Error', 'ERR_NETWORK');
+
+    expect(getApiErrorMessage(htmlError, 'Fallback')).toBe('Fallback');
+    expect(getApiErrorMessage(networkError, 'Fallback')).toBe('Fallback');
+  });
 });

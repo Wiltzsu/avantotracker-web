@@ -1,216 +1,165 @@
-.form-page .form-wrapper {
-  max-width: 760px;
-  margin: 0 auto;
+.form-head > *,
+.form-main > * {
+  max-width: 820px;
 }
 
-.form-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
+/* Each section: heading column + fields column (3/9 split), dividers between */
+.avanto-form .form-section {
+  display: grid;
+  grid-template-columns: 3fr 9fr;
+  gap: 1rem 1.5rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--color-border);
 }
 
-.form-header h1 {
-  margin: 0 0 0.35rem;
-  font-size: clamp(1.65rem, 3vw, 2rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #e0f2fe 0%, #67e8f9 55%, #5eead4 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.form-header p {
+.avanto-form .form-section > h2 {
   margin: 0;
-  color: var(--color-text-muted);
-}
-
-.avanto-form {
-  padding: 1.5rem;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  backdrop-filter: blur(16px);
-  box-shadow: var(--shadow-glow);
-}
-
-.form-section {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.form-section:last-of-type {
-  border-bottom: none;
-  margin-bottom: 0.75rem;
-}
-
-.form-section h3 {
-  margin: 0 0 1rem;
-  font-size: 1.05rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
+}
+
+.avanto-form .form-section > .form-group {
+  grid-column: 2;
 }
 
 .avanto-form .form-group {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.4rem;
-  margin-bottom: 1rem;
 }
 
-.avanto-form .form-group label,
+.avanto-form .form-group > label,
 .avanto-form .field-label {
-  font-weight: 600;
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
-  display: block;
-  margin-bottom: 0.45rem;
+}
+
+.field-hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
 }
 
 .option-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-bottom: 0.65rem;
+  gap: 0.375rem;
 }
 
 .option-buttons.compact {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(10, minmax(0, 2.5rem));
 }
 
 .option-btn {
-  padding: 0.55rem 0.85rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.04);
+  min-width: 2.5rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-input);
+  background: transparent;
   color: var(--color-text);
-  font-weight: 600;
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.option-buttons.compact .option-btn {
+  padding: 0.4rem 0;
+  font-family: var(--font-mono);
 }
 
 .option-btn:hover {
-  border-color: var(--color-border-strong);
-  background: var(--color-surface-hover);
+  background: var(--color-surface-2);
+}
+
+.option-btn:active {
+  background: var(--color-surface);
 }
 
 .option-btn.active {
-  background: var(--color-accent-gradient);
-  border-color: transparent;
-  color: #042033;
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: 600;
 }
 
 .inline-field-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
+  gap: 0.5rem;
   align-items: center;
 }
 
 .inline-field-row input[type='date'] {
-  flex: 1;
-  min-width: 10rem;
+  width: 11rem;
 }
 
-.avanto-form .selfie-upload {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.7rem 1rem;
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--color-border-strong);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--color-text);
-  cursor: pointer;
-  margin-bottom: 0;
-}
-
-.avanto-form .selfie-upload + input[type='file'] {
-  display: none;
+.avanto-form input[type='text'] {
+  max-width: 20rem;
 }
 
 .input-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.85rem;
+  display: flex;
+  gap: 0.75rem;
 }
 
 .input-with-label {
   position: relative;
   display: flex;
   align-items: center;
+  width: 8rem;
+}
+
+.input-with-label input {
+  padding-right: 2.75rem !important;
 }
 
 .input-with-label .input-suffix {
   position: absolute;
-  right: 0.75rem;
+  right: 0.7rem;
   color: var(--color-text-faint);
   font-size: var(--font-size-sm);
   pointer-events: none;
 }
 
-.avanto-form input[type='text'],
-.avanto-form input[type='date'],
-.avanto-form input[type='number'],
-.avanto-form input[type='file'],
-.avanto-form select,
-.avanto-form textarea {
-  width: 100%;
-  padding: 0.72rem 0.85rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--color-text);
+.selfie-upload {
+  position: relative;
 }
 
-.avanto-form input::placeholder,
-.avanto-form textarea::placeholder {
-  color: var(--color-text-faint);
+.selfie-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
 }
 
-.avanto-form input:focus,
-.avanto-form select:focus,
-.avanto-form textarea:focus {
-  outline: none;
-  border-color: var(--color-border-strong);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+.selfie-upload:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .form-actions {
   display: flex;
-  gap: 0.75rem;
   justify-content: flex-end;
-  margin-top: 1.25rem;
+  gap: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
 }
 
-.form-error {
-  margin-bottom: 0.85rem;
-  padding: 0.75rem 0.85rem;
-  border-radius: var(--radius-sm);
-  background: rgba(76, 20, 36, 0.35);
-  border: 1px solid rgba(251, 113, 133, 0.4);
-  color: #fecdd3;
-  text-align: center;
-}
-
-@media (max-width: 768px) {
-  .avanto-form {
-    padding: 1.15rem;
-  }
-
-  .input-row {
+@media (max-width: 720px) {
+  .avanto-form .form-section {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
-  .form-actions {
-    flex-direction: column;
+  .avanto-form .form-section > .form-group {
+    grid-column: 1;
   }
 
   .option-buttons.compact {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .form-actions .btn-primary {
+    flex: 1;
   }
 }

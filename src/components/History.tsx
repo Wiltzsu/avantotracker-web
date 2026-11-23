@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from './Header.js';
-import Footer from './Footer.js';
 import { avantoAPI, AvantoResponse, HistoryFilters } from '../services/api';
 import { getApiErrorMessage } from '../utils/apiErrors';
 import './History.css';
-import { getTemperatureColor, formatDuration, formatDate } from '../utils/formatters';
+import { formatDuration, formatDate } from '../utils/formatters';
 
 const emptyFilters = (): HistoryFilters => ({
   location: '',
@@ -80,142 +79,137 @@ const History: React.FC = () => {
     <div className="page-shell history-page">
       <Header />
 
-      <section className="page-hero">
-        <h1>Avantohistoria</h1>
-        <p>Kaikki avantosi yhdessä paikassa</p>
-      </section>
+      <header className="page-head history-head">
+        <h1>Historia</h1>
+      </header>
 
-      <main className="page-main history-wrapper">
-
-          <form className="history-filters" onSubmit={applyFilters}>
+      <main className="page-main history-main">
+        <form className="history-filters" onSubmit={applyFilters}>
+          <label className="filter-field filter-location">
+            <span>Paikka</span>
             <input
               type="text"
               name="location"
               value={filters.location ?? ''}
               onChange={handleFilterChange}
-              placeholder="Hae sijaintia"
             />
+          </label>
+          <label className="filter-field">
+            <span>Alkaen</span>
             <input
               type="date"
               name="start_date"
               value={filters.start_date ?? ''}
               onChange={handleFilterChange}
             />
+          </label>
+          <label className="filter-field">
+            <span>Asti</span>
             <input
               type="date"
               name="end_date"
               value={filters.end_date ?? ''}
               onChange={handleFilterChange}
             />
-            <select name="sauna" value={filters.sauna === undefined ? '' : filters.sauna ? '1' : '0'} onChange={handleFilterChange}>
-              <option value="">Kaikki saunat</option>
+          </label>
+          <label className="filter-field">
+            <span>Sauna</span>
+            <select
+              name="sauna"
+              value={filters.sauna === undefined ? '' : filters.sauna ? '1' : '0'}
+              onChange={handleFilterChange}
+            >
+              <option value="">Kaikki</option>
               <option value="1">Saunan kanssa</option>
               <option value="0">Ilman saunaa</option>
             </select>
-            <button type="submit" className="filter-btn">Suodata</button>
-            <button type="button" className="filter-btn secondary" onClick={resetFilters}>Tyhjennä</button>
-            <button type="button" className="filter-btn secondary" onClick={handleExport} disabled={exporting}>
-              {exporting ? 'Viedään...' : 'Vie CSV'}
+          </label>
+          <div className="filter-actions">
+            <button type="submit" className="btn-primary">Suodata</button>
+            <button type="button" className="btn-secondary" onClick={resetFilters}>Tyhjennä</button>
+            <button type="button" className="filter-export" onClick={handleExport} disabled={exporting}>
+              {exporting ? 'Viedään…' : 'Vie CSV'}
             </button>
-          </form>
+          </div>
+        </form>
 
-          {loading ? (
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-              <p>Ladataan avantohistoriaa...</p>
-            </div>
-          ) : error ? (
-            <div className="error-message">
-              <h2>Virhe sivulla</h2>
-              <p>{error}</p>
-            </div>
-          ) : (
-            <div className="history-list">
-              <div className="history-header-row">
-                <div className="item-main">
-                  <div className="location-date header-cell">Sijainti ja päivämäärä</div>
-                  <div className="duration header-cell">Aika</div>
-                  <div className="temperature header-cell">Veden lämpötila</div>
-                </div>
-              </div>
+        {loading ? (
+          <p className="state-banner">Ladataan…</p>
+        ) : error ? (
+          <p className="error-banner">{error}</p>
+        ) : iceBaths.length === 0 ? (
+          <p className="state-banner">Ei tuloksia näillä suodattimilla.</p>
+        ) : (
+          <>
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th scope="col">Päivä</th>
+                  <th scope="col">Paikka</th>
+                  <th scope="col" className="col-right">Kesto</th>
+                  <th scope="col" className="col-right">Vesi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {iceBaths.map((iceBath) => (
+                  <tr key={iceBath.avanto_id}>
+                    <td className="num col-date">{formatDate(iceBath.date)}</td>
+                    <td>
+                      <Link to={`/avanto/${iceBath.avanto_id}`}>{iceBath.location || 'Tuntematon paikka'}</Link>
+                    </td>
+                    <td className="num col-right">
+                      {formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}
+                    </td>
+                    <td className="num col-right">
+                      {iceBath.water_temperature !== null ? `${iceBath.water_temperature}°C` : '–'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-              {iceBaths.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-icon">🧊</div>
-                  <h3>Ei tuloksia</h3>
-                  <p>Kokeile toista suodatinta tai lisää uusi avanto.</p>
-                </div>
-              ) : (
-                iceBaths.map((iceBath) => (
-                  <Link
-                    key={iceBath.avanto_id}
-                    to={`/avanto/${iceBath.avanto_id}`}
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <div className="history-item">
-                      <div className="item-main">
-                        <div className="location-date">
-                          <span className="location">{iceBath.location}</span>
-                          <span className="date">{formatDate(iceBath.date)}</span>
-                        </div>
-                        <div className="duration">
-                          {formatDuration(iceBath.duration_minutes, iceBath.duration_seconds)}
-                        </div>
-                        <div className="temperature">
-                          {iceBath.water_temperature !== null && (
-                            <span
-                              className="temp-badge"
-                              style={{ backgroundColor: getTemperatureColor(iceBath.water_temperature ?? 0) }}
-                            >
-                              {iceBath.water_temperature}°C
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))
-              )}
-
-              {totalPages > 1 && (
-                <>
-                  <div className="pagination-bar">
-                    <button
-                      className="page-btn"
-                      onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                      disabled={currentPage <= 1}
-                    >
-                      Edellinen
-                    </button>
-                    <button
-                      className="page-btn"
-                      onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-                      disabled={currentPage >= totalPages}
-                    >
-                      Seuraava
-                    </button>
+            {totalPages > 1 && (
+              <nav className="pagination" aria-label="Sivutus">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPage <= 1}
+                >
+                  Edellinen
+                </button>
+                {totalPages <= 7 ? (
+                  <div className="page-numbers">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        type="button"
+                        className={`page-num num ${page === currentPage ? 'active' : ''}`}
+                        aria-current={page === currentPage ? 'page' : undefined}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </button>
+                    ))}
                   </div>
-
-                  {totalPages <= 7 && (
-                    <div className="page-numbers">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                          key={page}
-                          className={`page-num ${page === currentPage ? 'active' : ''}`}
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          {page}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
+                ) : (
+                  <span className="page-info num">
+                    {currentPage} / {totalPages}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                  disabled={currentPage >= totalPages}
+                >
+                  Seuraava
+                </button>
+              </nav>
+            )}
+          </>
+        )}
       </main>
-
-      <Footer />
     </div>
   );
 };

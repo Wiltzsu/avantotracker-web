@@ -1,12 +1,12 @@
 {
   "name": "AvantoTracker",
   "short_name": "Avanto",
-  "description": "Track ice baths and cold water therapy sessions.",
+  "description": "Avantouintien loki.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#05080f",
-  "theme_color": "#0891b2",
-  "lang": "en",
+  "background_color": "#0c1117",
+  "theme_color": "#0c1117",
+  "lang": "fi",
   "scope": "/",
   "icons": [
     {

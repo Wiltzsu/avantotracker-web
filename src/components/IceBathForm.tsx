@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { avantoAPI } from '../services/api';
-import { AvantoFormData, AvantoPayload, buildAvantoPayload } from '../utils/avantoForm';
+import { AvantoFormData, AvantoPayload, buildAvantoPayload, localIsoDate } from '../utils/avantoForm';
 import {
   DURATION_PRESETS,
   FEELING_VALUES,
@@ -26,7 +26,7 @@ interface IceBathFormProps {
 }
 
 const CUSTOM = '__custom__';
-const todayIso = () => new Date().toISOString().split('T')[0];
+const todayIso = () => localIsoDate();
 
 const IceBathForm: React.FC<IceBathFormProps> = ({
   initialData,
@@ -204,14 +204,14 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
       )}
 
       {error && (
-        <div className="form-error" role="alert">
+        <p className="error-banner" role="alert">
           {error}
-        </div>
+        </p>
       )}
 
       <form onSubmit={handleSubmit} className="avanto-form">
         <div className="form-section">
-          <h3>Perustiedot</h3>
+          <h2>Perustiedot</h2>
 
           <div className="form-group">
             <label htmlFor="date">Päivämäärä</label>
@@ -250,14 +250,14 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
                 name="location"
                 value={formData.location}
                 onChange={(event) => setField('location', event.target.value)}
-                placeholder="esim. Seurasaari"
+                placeholder="Paikan nimi"
               />
             )}
           </div>
         </div>
 
         <div className="form-section">
-          <h3>Vesi</h3>
+          <h2>Vesi</h2>
 
           <div className="form-group">
             <span className="field-label">Lämpötila</span>
@@ -322,7 +322,7 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
         </div>
 
         <div className="form-section">
-          <h3>Fiilis</h3>
+          <h2>Fiilis</h2>
 
           <div className="form-group">
             <span className="field-label">Ennen</span>
@@ -360,7 +360,7 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
         </div>
 
         <div className="form-section">
-          <h3>Sauna</h3>
+          <h2>Sauna</h2>
 
           <div className="form-group">
             <span className="field-label">Saunottiinko?</span>
@@ -401,19 +401,19 @@ const IceBathForm: React.FC<IceBathFormProps> = ({
         </div>
 
         <div className="form-section">
-          <h3>Muisto</h3>
+          <h2>Selfie</h2>
 
           <div className="form-group">
-            <label className="selfie-upload" htmlFor="selfie">
-              {selfieFile ? selfieFile.name : 'Lisää selfie (valinnainen)'}
+            <label className="btn-secondary selfie-upload">
+              {selfieFile ? selfieFile.name : 'Lisää selfie'}
+              <input
+                type="file"
+                name="selfie"
+                accept="image/*"
+                onChange={(event) => setSelfieFile(event.target.files?.[0] ?? null)}
+              />
             </label>
-            <input
-              type="file"
-              id="selfie"
-              name="selfie"
-              accept="image/*"
-              onChange={(event) => setSelfieFile(event.target.files?.[0] ?? null)}
-            />
+            <span className="field-hint">Valinnainen</span>
           </div>
         </div>
 

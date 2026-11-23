@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from './Header.js';
-import Footer from './Footer.js';
 import IceBathForm from './IceBathForm';
 import { avantoAPI } from '../services/api';
+import { getApiErrorMessage } from '../utils/apiErrors';
 import { avantoToFormData, emptyAvantoFormData } from '../utils/avantoForm';
-import iceLake from '../ice-lake.jpg';
 import './NewIceBath.css';
 
 const EditIceBath: React.FC = () => {
@@ -18,7 +17,7 @@ const EditIceBath: React.FC = () => {
   useEffect(() => {
     const fetchAvanto = async () => {
       if (!id) {
-        setError('Avanto ID puuttuu');
+        setError('Avantoa ei löytynyt.');
         setLoading(false);
         return;
       }
@@ -27,8 +26,7 @@ const EditIceBath: React.FC = () => {
         const avanto = await avantoAPI.getById(id);
         setInitialData(avantoToFormData(avanto));
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Avantoa ei voitu ladata';
-        setError(message);
+        setError(getApiErrorMessage(err, 'Avannon lataus epäonnistui.'));
       } finally {
         setLoading(false);
       }
@@ -42,9 +40,8 @@ const EditIceBath: React.FC = () => {
       <div className="page-shell form-page">
         <Header />
         <main className="page-main">
-          <div className="state-banner">Ladataan avantoa...</div>
+          <p className="state-banner">Ladataan…</p>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -54,9 +51,8 @@ const EditIceBath: React.FC = () => {
       <div className="page-shell form-page">
         <Header />
         <main className="page-main">
-          <div className="error-banner">{error ?? 'Avantoa ei löytynyt'}</div>
+          <p className="error-banner">{error ?? 'Avantoa ei löytynyt.'}</p>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -64,21 +60,17 @@ const EditIceBath: React.FC = () => {
   return (
     <div className="page-shell form-page">
       <Header />
-      <section
-        className="page-hero"
-        style={{ ['--hero-image' as string]: `url(${iceLake})` }}
-      >
+      <header className="page-head form-head">
         <h1>Muokkaa avantoa</h1>
-        <p>Päivitä avantokäynnin tiedot.</p>
-      </section>
-      <main className="page-main">
+      </header>
+      <main className="page-main form-main">
         <IceBathForm
           key={id}
           initialData={initialData}
           title=""
           subtitle=""
           submitLabel="Tallenna muutokset"
-          submittingLabel="Tallennetaan..."
+          submittingLabel="Tallennetaan…"
           cancelTo={`/avanto/${id}`}
           onSubmit={async (payload, selfie) => {
             await avantoAPI.update(id, payload);
@@ -89,7 +81,6 @@ const EditIceBath: React.FC = () => {
           }}
         />
       </main>
-      <Footer />
     </div>
   );
 };

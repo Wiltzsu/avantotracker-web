@@ -26,8 +26,15 @@ export interface AvantoPayload {
   sauna_duration: number | null;
 }
 
+// YYYY-MM-DD from the *local* date. toISOString() is UTC, which gave yesterday's
+// date between 00:00 and 02:00/03:00 Finnish time.
+export const localIsoDate = (date: Date = new Date()): string => {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
 export const emptyAvantoFormData = (): AvantoFormData => ({
-  date: new Date().toISOString().split('T')[0],
+  date: localIsoDate(),
   location: '',
   water_temperature: '0',
   duration_minutes: '1',

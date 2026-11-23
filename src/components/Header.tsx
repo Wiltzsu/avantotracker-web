@@ -24,7 +24,7 @@ const Header = () => {
                 d="M16 3L4 27h24L16 3z"
                 stroke="currentColor"
                 strokeWidth="1.5"
-                fill="rgba(56,189,248,0.15)"
+                fill="none"
               />
               <path d="M10 22h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
@@ -46,9 +46,9 @@ const Header = () => {
         </nav>
 
         <div className="header-actions">
-          <span className="user-chip">{user?.name?.split(' ')[0] ?? 'Käyttäjä'}</span>
+          <span className="header-user">{user?.name?.split(' ')[0] ?? 'Käyttäjä'}</span>
           <button type="button" onClick={() => logout()} className="logout-button">
-            Ulos
+            Kirjaudu ulos
           </button>
         </div>
       </div>

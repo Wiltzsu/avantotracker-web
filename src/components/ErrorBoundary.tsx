@@ -22,24 +22,18 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div
-          style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '2rem',
-            textAlign: 'center',
-          }}
-        >
-          <div>
-            <h1>Jotain meni pieleen</h1>
-            <p>Yritä päivittää sivu. Jos ongelma jatkuu, kirjaudu uudelleen sisään.</p>
-            <button type="button" onClick={() => window.location.assign('/login')}>
-              Siirry kirjautumiseen
+        <main className="page-head">
+          <h1>Jokin meni pieleen</h1>
+          <p>Päivitä sivu. Jos virhe toistuu, kirjaudu uudelleen sisään.</p>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
+            <button type="button" className="btn-primary" onClick={() => window.location.reload()}>
+              Päivitä sivu
+            </button>
+            <button type="button" className="btn-secondary" onClick={() => window.location.assign('/login')}>
+              Kirjautumiseen
             </button>
           </div>
-        </div>
+        </main>
       );
     }
 

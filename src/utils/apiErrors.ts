@@ -2,12 +2,13 @@ import { isAxiosError } from 'axios';
 
 export const getApiErrorMessage = (
   error: unknown,
-  fallback = 'Something went wrong. Please try again.'
+  fallback = 'Jokin meni pieleen. Yritä uudelleen.'
 ): string => {
   if (isAxiosError(error)) {
     const data = error.response?.data;
 
-    if (typeof data === 'string' && data.trim()) {
+    // Skip HTML bodies (e.g. an nginx 502 page) so markup never reaches the UI
+    if (typeof data === 'string' && data.trim() && !data.trim().startsWith('<')) {
       return data;
     }
 
@@ -26,6 +27,10 @@ export const getApiErrorMessage = (
         return firstFieldError[0];
       }
     }
+
+    // Axios' own message ("Request failed with status code 500", "Network Error")
+    // is English developer text; show the Finnish fallback instead.
+    return fallback;
   }
 
   if (error instanceof Error && error.message.trim()) {

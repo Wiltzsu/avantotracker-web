@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from './Header';
-import Footer from './Footer';
 import { avantoAPI, DashboardData } from '../services/api';
 import { getApiErrorMessage } from '../utils/apiErrors';
 import {
@@ -10,9 +9,19 @@ import {
   formatSecondsAsDuration,
   formatTemperature,
 } from '../utils/statsFormatters';
-import { formatDate, formatDuration, getTemperatureColor } from '../utils/formatters';
+import { formatDate, formatDuration } from '../utils/formatters';
 import iceLake from '../ice-lake.jpg';
 import './Dashboard.css';
+
+const lastDipHeadline = (days: number | null): string => {
+  if (days === null) {
+    return 'Ei vielä yhtään avantoa';
+  }
+  if (days === 0) {
+    return 'Avannossa tänään';
+  }
+  return `Viimeisin avanto ${formatDaysSince(days).toLowerCase()}`;
+};
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
@@ -24,8 +33,7 @@ const Dashboard = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await avantoAPI.dashboard();
-        setDashboard(data);
+        setDashboard(await avantoAPI.dashboard());
       } catch (err) {
         setError(getApiErrorMessage(err, 'Etusivun lataus epäonnistui.'));
       } finally {
@@ -42,143 +50,96 @@ const Dashboard = () => {
     <div className="page-shell dashboard-page">
       <Header />
 
-      <section
-        className="page-hero dashboard-hero"
-        style={{ ['--hero-image' as string]: `url(${iceLake})` }}
-      >
-        <h1>Tervetuloa takaisin</h1>
-        <p>
-          {dashboard
-            ? `Viimeisin avanto ${formatDaysSince(dashboard.days_since_last_dip).toLowerCase()}.`
-            : 'Seuraa avantojasi, putkia ja henkilökohtaisia ennätyksiä.'}
-        </p>
+      <section className="dashboard-photo" style={{ ['--photo' as string]: `url(${iceLake})` }}>
+        <div className="dashboard-photo-inner">
+          <h1>{dashboard ? lastDipHeadline(dashboard.days_since_last_dip) : 'Etusivu'}</h1>
+          {dashboard?.last_dip_date && (
+            <p className="num">{formatDate(dashboard.last_dip_date)}</p>
+          )}
+          <Link to="/new" className="btn-primary">
+            Lisää avanto
+          </Link>
+        </div>
       </section>
 
       <main className="page-main">
-        <section className="quick-actions-section">
-          <h2 className="section-title">Pikatoiminnot</h2>
-          <div className="action-cards">
-            <Link to="/new" className="action-card primary">
-              <div className="action-icon">+</div>
-              <div className="action-content">
-                <h3>Uusi avanto</h3>
-                <p>Kirjaa uinti ja fiilikset</p>
-              </div>
-              <span className="action-arrow">→</span>
-            </Link>
-            <Link to="/stats" className="action-card">
-              <div className="action-icon">↗</div>
-              <div className="action-content">
-                <h3>Tilastot</h3>
-                <p>Trendit ja saavutukset</p>
-              </div>
-              <span className="action-arrow">→</span>
-            </Link>
-            <Link to="/history" className="action-card">
-              <div className="action-icon">☰</div>
-              <div className="action-content">
-                <h3>Historia</h3>
-                <p>Selaa ja suodata</p>
-              </div>
-              <span className="action-arrow">→</span>
-            </Link>
-            <Link to="/records" className="action-card">
-              <div className="action-icon">★</div>
-              <div className="action-content">
-                <h3>Ennätykset</h3>
-                <p>Henkilökohtaiset huiput</p>
-              </div>
-              <span className="action-arrow">→</span>
-            </Link>
-          </div>
-        </section>
-
-        {loading && <div className="state-banner">Ladataan etusivua...</div>}
-        {error && <div className="error-banner">{error}</div>}
+        {loading && <p className="state-banner">Ladataan…</p>}
+        {error && <p className="error-banner">{error}</p>}
 
         {!loading && !error && dashboard && snapshot && (
           <>
-            <section className="stats-section">
-              <h2 className="section-title">Tämän kuun tilanne</h2>
-              <div className="stats-grid">
-                <div className="stat-card glass-card">
-                  <span className="stat-label">Käynnit</span>
-                  <div className="stat-value">{snapshot.visits}</div>
-                  <span className="stat-meta">{snapshot.label}</span>
+            <section className="month-section">
+              <h2 className="section-title">{snapshot.label}</h2>
+
+              <div className="month-layout">
+                <div className="month-lead">
+                  <span className="month-lead-value num">{snapshot.visits}</span>
+                  <span className="month-lead-label">käyntiä</span>
                 </div>
-                <div className="stat-card glass-card">
-                  <span className="stat-label">Kylmäaika</span>
-                  <div className="stat-value">{formatSecondsAsDuration(snapshot.total_duration)}</div>
-                  <span className="stat-meta">
-                    Keskim. {formatSecondsAsDuration(snapshot.average_duration)}
-                  </span>
-                </div>
-                <div className="stat-card glass-card">
-                  <span className="stat-label">Putki</span>
-                  <div className="stat-value">{dashboard.current_streak_days} pv</div>
-                  <span className="stat-meta">Paras {dashboard.best_streak_days} pv</span>
-                </div>
-                <div className="stat-card glass-card">
-                  <span className="stat-label">Keskilämpö</span>
-                  <div className="stat-value">{formatTemperature(snapshot.average_water_temperature)}</div>
-                  <span className="stat-meta">
-                    Kylmin {formatTemperature(dashboard.highlights.coldest_water_temperature)}
-                  </span>
-                </div>
-                <div className="stat-card glass-card">
-                  <span className="stat-label">Saunakerrat</span>
-                  <div className="stat-value">{snapshot.sauna_sessions}</div>
-                  <span className="stat-meta">Tässä kuussa</span>
-                </div>
-                <div className="stat-card glass-card">
-                  <span className="stat-label">Kirosanat</span>
-                  <div className="stat-value">{dashboard.highlights.total_swear_words}</div>
-                  <span className="stat-meta">
-                    Fiilis {formatMoodDelta(dashboard.highlights.average_mood_improvement)}
-                  </span>
-                </div>
+
+                <dl className="figure-list">
+                  <div>
+                    <dt>Kylmäaika</dt>
+                    <dd className="num">{formatSecondsAsDuration(snapshot.total_duration)}</dd>
+                    <dd className="figure-note">keskim. {formatSecondsAsDuration(snapshot.average_duration)}</dd>
+                  </div>
+                  <div>
+                    <dt>Putki</dt>
+                    <dd className="num">{dashboard.current_streak_days} pv</dd>
+                    <dd className="figure-note">paras {dashboard.best_streak_days} pv</dd>
+                  </div>
+                  <div>
+                    <dt>Veden keskilämpö</dt>
+                    <dd className="num">{formatTemperature(snapshot.average_water_temperature)}</dd>
+                    <dd className="figure-note">
+                      kylmin {formatTemperature(dashboard.highlights.coldest_water_temperature)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Saunakerrat</dt>
+                    <dd className="num">{snapshot.sauna_sessions}</dd>
+                  </div>
+                  <div>
+                    <dt>Kirosanat</dt>
+                    <dd className="num">{dashboard.highlights.total_swear_words}</dd>
+                    <dd className="figure-note">
+                      fiilis {formatMoodDelta(dashboard.highlights.average_mood_improvement)}
+                    </dd>
+                  </div>
+                </dl>
               </div>
             </section>
 
-            <section className="activity-section">
-              <h2 className="section-title">Viimeisimmät avannot</h2>
+            <section className="recent-section">
+              <div className="recent-head">
+                <h2 className="section-title">Viimeisimmät</h2>
+                <Link to="/history">Koko historia</Link>
+              </div>
+
               {dashboard.recent_avantos.length === 0 ? (
-                <div className="state-banner">Ei merkintöjä vielä. Lisää ensimmäinen avanto.</div>
+                <p className="state-banner">Ei merkintöjä vielä.</p>
               ) : (
-                <div className="activity-list glass-card">
+                <ul className="recent-list">
                   {dashboard.recent_avantos.map((avanto) => (
-                    <Link
-                      key={avanto.avanto_id}
-                      to={`/avanto/${avanto.avanto_id}`}
-                      className="activity-item activity-link"
-                    >
-                      <div className="activity-dot" />
-                      <div className="activity-content">
-                        <div className="activity-message">
-                          {avanto.location || 'Tuntematon paikka'} ·{' '}
+                    <li key={avanto.avanto_id}>
+                      <Link to={`/avanto/${avanto.avanto_id}`} className="recent-row">
+                        <span className="recent-date num">{formatDate(avanto.date)}</span>
+                        <span className="recent-place">{avanto.location || 'Tuntematon paikka'}</span>
+                        <span className="recent-duration num">
                           {formatDuration(avanto.duration_minutes, avanto.duration_seconds)}
-                          {avanto.water_temperature !== null && (
-                            <span
-                              className="activity-temp"
-                              style={{ color: getTemperatureColor(avanto.water_temperature) }}
-                            >
-                              {' '}
-                              · {avanto.water_temperature}°C
-                            </span>
-                          )}
-                        </div>
-                        <div className="activity-time">{formatDate(avanto.date)}</div>
-                      </div>
-                    </Link>
+                        </span>
+                        <span className="recent-temp num">
+                          {avanto.water_temperature !== null ? `${avanto.water_temperature}°C` : '–'}
+                        </span>
+                      </Link>
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
             </section>
           </>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 };

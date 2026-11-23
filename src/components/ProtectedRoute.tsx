@@ -7,18 +7,8 @@ const ProtectedRoute: React.FC = () => {
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      >
-        <div className="spinner" aria-label="Ladataan" />
-      </div>
-    );
+    // Auth check is usually instant; an empty page avoids a spinner flash.
+    return <div className="page-shell" aria-busy="true" aria-label="Ladataan" />;
   }
 
   if (!isAuthenticated) {
