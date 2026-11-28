@@ -21,12 +21,15 @@ const Header = () => {
           <span className="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 32 32" fill="none">
               <path
-                d="M16 3L4 27h24L16 3z"
+                d="M1 18q2.5-2 5 0t5 0M21 18q2.5-2 5 0t5 0"
                 stroke="currentColor"
-                strokeWidth="1.5"
-                fill="none"
+                strokeWidth="2"
+                strokeLinecap="round"
+                opacity="0.6"
               />
-              <path d="M10 22h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <rect x="12.5" y="2" width="7" height="19" rx="3.5" stroke="var(--color-text)" strokeWidth="2" />
+              <circle cx="16" cy="24.5" r="5.5" fill="currentColor" />
+              <path d="M16 22V9" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
             </svg>
           </span>
           <span className="brand-text">AvantoTracker</span>
